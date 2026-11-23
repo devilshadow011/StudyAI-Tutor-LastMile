@@ -1,0 +1,842 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>StudyAI Teacher | Student Portal</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #080d18;
+      --glass: rgba(17, 27, 44, 0.88);
+      --white: #ffffff;
+      --muted: #aab5c7;
+      --cyan: #49e5ff;
+      --gold: #f5c451;
+      --purple: #8b5cf6;
+      --radius: 18px;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; }
+    * { margin: 0; padding: 0; }
+    html { max-width: 100%; }
+
+    body {
+      font-family: 'Inter', Arial, sans-serif;
+      background: var(--bg);
+      color: var(--white);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      overflow-x: hidden;
+      max-width: 100%;
+      position: relative;
+    }
+
+    .hidden { display: none !important; }
+
+    .glow {
+      position: fixed;
+      width: 280px;
+      height: 280px;
+      border-radius: 50%;
+      filter: blur(100px);
+      opacity: 0.2;
+      pointer-events: none;
+      z-index: 0;
+    }
+    .glow-cyan {
+      background: var(--cyan);
+      top: -90px;
+      left: -90px;
+      animation: floatCyan 12s ease-in-out infinite;
+    }
+    .glow-purple {
+      background: var(--purple);
+      bottom: -90px;
+      right: -90px;
+      animation: floatPurple 14s ease-in-out infinite;
+    }
+    @keyframes floatCyan {
+      0%, 100% { transform: translate(0, 0); }
+      50% { transform: translate(70px, 50px); }
+    }
+    @keyframes floatPurple {
+      0%, 100% { transform: translate(0, 0); }
+      50% { transform: translate(-70px, -50px); }
+    }
+
+    .card {
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      max-width: 510px;
+      margin: 0 auto;
+      background: var(--glass);
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      border-radius: var(--radius);
+      padding: 32px;
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      box-shadow: 0 0 25px rgba(73, 229, 255, 0.35);
+      transition: box-shadow 0.4s ease;
+      animation: cardEntrance 0.7s ease both;
+    }
+    .card:hover { box-shadow: 0 0 45px rgba(73, 229, 255, 0.55); }
+    @keyframes cardEntrance {
+      from { opacity: 0; transform: translateY(24px) scale(0.97); }
+      to { opacity: 1; transform: none; }
+    }
+
+    h1 {
+      text-align: center;
+      font-size: 27px;
+      font-weight: 800;
+      margin-bottom: 6px;
+    }
+    .word-student { color: var(--white); }
+    .word-portal {
+      color: var(--cyan);
+      text-shadow: 0 0 12px rgba(73, 229, 255, 0.5);
+    }
+    .subtitle {
+      text-align: center;
+      color: var(--muted);
+      font-size: 14px;
+      margin-bottom: 22px;
+    }
+
+    .tabs {
+      display: flex;
+      gap: 8px;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 12px;
+      padding: 4px;
+      margin-bottom: 20px;
+    }
+    .tab-btn {
+      flex: 1;
+      background: transparent;
+      border: none;
+      color: var(--muted);
+      padding: 10px;
+      border-radius: 9px;
+      font: inherit;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.35s ease, color 0.35s ease, box-shadow 0.35s ease;
+    }
+    .tab-btn.active {
+      background: linear-gradient(135deg, rgba(73, 229, 255, 0.2), rgba(139, 92, 246, 0.25));
+      color: var(--white);
+      box-shadow: 0 0 12px rgba(73, 229, 255, 0.25);
+    }
+
+    .form-panel { display: none; }
+    .form-panel.active {
+      display: block;
+      animation: formEntrance 0.45s ease both;
+    }
+    @keyframes formEntrance {
+      from { opacity: 0; transform: translateX(16px); }
+      to { opacity: 1; transform: none; }
+    }
+
+    .field { margin-bottom: 14px; }
+    .field label {
+      display: block;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+
+    input, select {
+      width: 100%;
+      max-width: 100%;
+      background: rgba(8, 13, 24, 0.6);
+      border: 1px solid rgba(255, 255, 255, 0.22);
+      border-radius: 10px;
+      padding: 11px 13px;
+      color: var(--white);
+      font: inherit;
+      font-size: 14px;
+      outline: none;
+      transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    }
+    input::placeholder { color: rgba(170, 181, 199, 0.6); }
+    input:focus, select:focus {
+      border-color: var(--cyan);
+      box-shadow: 0 0 0 3px rgba(73, 229, 255, 0.2), 0 0 14px rgba(73, 229, 255, 0.45);
+    }
+    input.input-error {
+      border-color: #ef4444 !important;
+      box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.25), 0 0 12px rgba(239, 68, 68, 0.4) !important;
+    }
+    .password-wrap {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+    .password-wrap input {
+      padding-right: 42px;
+    }
+    .toggle-eye {
+      position: absolute;
+      right: 10px;
+      background: none;
+      border: none;
+      color: var(--muted);
+      cursor: pointer;
+      padding: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: color 0.2s ease;
+    }
+    .toggle-eye:hover {
+      color: var(--cyan);
+    }
+    .row-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+
+    .btn {
+      width: 100%;
+      padding: 13px;
+      border: none;
+      border-radius: 12px;
+      font: inherit;
+      font-weight: 700;
+      font-size: 15px;
+      cursor: pointer;
+      transition: transform 0.25s ease, box-shadow 0.25s ease, opacity 0.25s ease;
+    }
+    .btn:disabled { opacity: 0.6; cursor: not-allowed; }
+    .btn-auth {
+      background: linear-gradient(135deg, #49e5ff, #8b5cf6);
+      color: #06101c;
+      margin-top: 6px;
+    }
+    .btn-auth:hover:not(:disabled) {
+      transform: translateY(-2px) scale(1.01);
+      box-shadow: 0 8px 22px rgba(73, 229, 255, 0.35);
+    }
+    .btn-gold {
+      background: linear-gradient(135deg, #f5c451, #e0a526);
+      color: #1a1200;
+      font-weight: 800;
+      margin-top: 6px;
+    }
+    .btn-gold:hover:not(:disabled) {
+      transform: translateY(-3px);
+      box-shadow: 0 10px 24px rgba(245, 196, 81, 0.45);
+    }
+    .btn-outline-sm {
+      width: auto;
+      padding: 8px 13px;
+      background: transparent;
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      border-radius: 10px;
+      color: var(--white);
+      font: inherit;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      flex-shrink: 0;
+      transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    }
+    .btn-outline-sm:hover {
+      border-color: var(--cyan);
+      box-shadow: 0 0 12px rgba(73, 229, 255, 0.4);
+    }
+
+    .message {
+      margin-top: 16px;
+      padding: 12px 14px;
+      border-radius: 10px;
+      border: 1px solid transparent;
+      font-size: 14px;
+      line-height: 1.5;
+      animation: notifEntrance 0.4s ease both;
+    }
+    .message.success {
+      color: #86efac;
+      background: rgba(34, 197, 94, 0.14);
+      border-color: rgba(34, 197, 94, 0.55);
+    }
+    .message.error {
+      color: #fca5a5;
+      background: rgba(239, 68, 68, 0.14);
+      border-color: rgba(239, 68, 68, 0.55);
+    }
+    .message.info {
+      color: var(--cyan);
+      background: rgba(73, 229, 255, 0.1);
+      border-color: rgba(73, 229, 255, 0.45);
+    }
+    @keyframes notifEntrance {
+      from { opacity: 0; transform: translateY(-8px); }
+      to { opacity: 1; transform: none; }
+    }
+
+    .security-note {
+      margin-top: 18px;
+      font-size: 12px;
+      line-height: 1.5;
+      color: var(--muted);
+      text-align: center;
+      opacity: 0.85;
+    }
+
+    #onboardingSection { animation: formEntrance 0.5s ease both; }
+
+    .account-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      background: rgba(8, 13, 24, 0.55);
+      border-radius: 12px;
+      padding: 12px 14px;
+      margin-bottom: 20px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+    .account-info {
+      flex: 1;
+      min-width: 0;
+      overflow-wrap: anywhere;
+    }
+    .account-info strong { color: var(--white); }
+    .account-btns { display: flex; gap: 8px; }
+
+    .student-section h2 {
+      text-align: center;
+      font-size: 20px;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+    .section-sub {
+      text-align: center;
+      color: var(--muted);
+      font-size: 14px;
+      margin-bottom: 18px;
+    }
+
+    @media (max-width: 480px) {
+      body { padding: 12px; }
+      .card { padding: 20px 16px; }
+      h1 { font-size: 22px; }
+      .row-2 { grid-template-columns: 1fr; }
+      .account-row { flex-direction: column; align-items: stretch; }
+      .account-btns { width: 100%; }
+      .btn-outline-sm { flex: 1; text-align: center; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="glow glow-cyan" aria-hidden="true"></div>
+  <div class="glow glow-purple" aria-hidden="true"></div>
+
+  <main class="card">
+    <h1><span class="word-student">✦ StudyAI</span> <span class="word-portal">Teacher</span></h1>
+    <p class="subtitle">Welcome! Login or create your student account</p>
+
+    <!-- AUTH SECTION -->
+    <section id="authSection">
+      <div class="tabs" role="tablist">
+        <button type="button" class="tab-btn active" id="loginTabBtn" role="tab">Login</button>
+        <button type="button" class="tab-btn" id="signupTabBtn" role="tab">Create Account</button>
+      </div>
+
+      <form id="loginForm" class="form-panel active" autocomplete="on">
+        <div class="field">
+          <label for="loginIdentifier">Username or Email</label>
+          <input type="text" id="loginIdentifier" placeholder="Enter username or email" required autocomplete="username">
+        </div>
+        <div class="field">
+          <label for="loginPassword">Password</label>
+          <div class="password-wrap">
+            <input type="password" id="loginPassword" placeholder="Enter your password" required autocomplete="current-password">
+            <button type="button" class="toggle-eye" onclick="togglePass('loginPassword', this)" aria-label="Toggle password visibility">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+            </button>
+          </div>
+        </div>
+        <button type="submit" class="btn btn-auth" id="loginSubmitBtn">Login to Account →</button>
+      </form>
+
+      <form id="signupForm" class="form-panel" autocomplete="off">
+        <div class="field">
+          <label for="signupUsername">Username</label>
+          <input type="text" id="signupUsername" placeholder="Create your username" required minlength="3" maxlength="30">
+        </div>
+        <div class="field">
+          <label for="signupEmail">Email Address</label>
+          <input type="email" id="signupEmail" placeholder="Enter your email (e.g. name@gmail.com)" required>
+        </div>
+        <div class="field">
+          <label for="signupPassword">Password</label>
+          <div class="password-wrap">
+            <input type="password" id="signupPassword" placeholder="Min 8 chars (1 Upper, 1 Lower, 1 Number)" required minlength="8" autocomplete="new-password">
+            <button type="button" class="toggle-eye" onclick="togglePass('signupPassword', this)" aria-label="Toggle password visibility">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+            </button>
+          </div>
+        </div>
+        <div class="field">
+          <label for="signupConfirm">Confirm Password</label>
+          <div class="password-wrap">
+            <input type="password" id="signupConfirm" placeholder="Confirm your password" required autocomplete="new-password">
+            <button type="button" class="toggle-eye" onclick="togglePass('signupConfirm', this)" aria-label="Toggle password visibility">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+            </button>
+          </div>
+        </div>
+        <button type="submit" class="btn btn-auth" id="signupSubmitBtn">Create My Account →</button>
+      </form>
+    </section>
+
+    <!-- PROFILE ONBOARDING SECTION -->
+    <section id="onboardingSection" class="hidden">
+      <div class="account-row">
+        <div class="account-info">
+          <strong id="accountUsername"></strong> &middot; <span id="accountEmail"></span>
+        </div>
+        <div class="account-btns">
+          <button type="button" class="btn-outline-sm hidden" id="backToDashBtn">Dashboard</button>
+          <button type="button" class="btn-outline-sm" id="logoutBtn">Logout</button>
+        </div>
+      </div>
+
+      <div class="student-section">
+        <h2>Tell Me About Yourself</h2>
+        <p class="section-sub">Complete your student profile to enter the learning portal.</p>
+
+        <form id="studentForm" autocomplete="off">
+          <div class="field">
+            <label for="studentName">Full Name</label>
+            <input type="text" id="studentName" placeholder="Enter your full name" required maxlength="80">
+          </div>
+
+          
+
+          <div class="row-2">
+            <div class="field">
+              <label for="studentClass">Class</label>
+              <select id="studentClass" required>
+                <option value="">Choose Class</option>
+                <option value="5">Class 5</option>
+                <option value="6">Class 6</option>
+                <option value="7">Class 7</option>
+                <option value="8">Class 8</option>
+                <option value="9">Class 9</option>
+                <option value="10">Class 10</option>
+                <option value="11">Class 11</option>
+                <option value="12">Class 12</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="studentBoard">Board</label>
+              <select id="studentBoard" required>
+                <option value="">Choose Board</option>
+                <option value="CBSE">CBSE</option>
+                <option value="ICSE">ICSE</option>
+                <option value="JAC">JAC</option>
+                <option value="Other">Other</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="studentLanguage">Preferred Language</label>
+            <select id="studentLanguage" required>
+              <option value="">Choose Language</option>
+              <option value="en">English</option>
+              <option value="hi">हिन्दी (Hindi)</option>
+              <option value="bn">বাংলা (Bengali)</option>
+            </select>
+          </div>
+
+          <button type="submit" class="btn btn-gold" id="saveInfoBtn">Save &amp; Enter Dashboard →</button>
+        </form>
+      </div>
+    </section>
+
+    <div id="messageBox" class="message hidden" role="alert" aria-live="polite"></div>
+
+    <p class="security-note">
+      Frontend educational demo · Data is stored locally in your browser.
+    </p>
+  </main>
+
+  <script>
+    'use strict';
+
+    const ACCOUNTS_KEY = 'studentPortalAccounts';
+    const PROFILES_KEY = 'studentPortalProfiles';
+    const SESSION_KEY  = 'studentPortalSession';
+    const EMAIL_PATTERN = /^[a-zA-Z0-9._%+-]+@(gmail\.com|yahoo\.com|yahoo\.in|outlook\.com|hotmail\.com|icloud\.com|proton\.me|protonmail\.com|rediffmail\.com|live\.com)$/i;
+    const PASS_PATTERN = /^(?=.*[a-z])(?=.*[A-Z])(?=(?:.*\d){3,})(?=.*[^a-zA-Z0-9\s]).{8,}$/;
+    const EYE_OPEN = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>';
+    const EYE_OFF  = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>';
+
+    function togglePass(inputId, btn) {
+      const inp = document.getElementById(inputId);
+      const show = inp.type === 'password';
+      inp.type = show ? 'text' : 'password';
+      btn.innerHTML = show ? EYE_OFF : EYE_OPEN;
+    }
+        let currentUser = null;
+
+    const el = {
+      authSection: document.getElementById('authSection'),
+      onboardingSection: document.getElementById('onboardingSection'),
+      loginTabBtn: document.getElementById('loginTabBtn'),
+      signupTabBtn: document.getElementById('signupTabBtn'),
+      loginForm: document.getElementById('loginForm'),
+      loginIdentifier: document.getElementById('loginIdentifier'),
+      loginPassword: document.getElementById('loginPassword'),
+      loginSubmitBtn: document.getElementById('loginSubmitBtn'),
+      signupForm: document.getElementById('signupForm'),
+      signupUsername: document.getElementById('signupUsername'),
+      signupEmail: document.getElementById('signupEmail'),
+      signupPassword: document.getElementById('signupPassword'),
+      signupConfirm: document.getElementById('signupConfirm'),
+      signupSubmitBtn: document.getElementById('signupSubmitBtn'),
+      messageBox: document.getElementById('messageBox'),
+      accountUsername: document.getElementById('accountUsername'),
+      accountEmail: document.getElementById('accountEmail'),
+      backToDashBtn: document.getElementById('backToDashBtn'),
+      logoutBtn: document.getElementById('logoutBtn'),
+      studentForm: document.getElementById('studentForm'),
+      studentName: document.getElementById('studentName'),
+      
+      studentClass: document.getElementById('studentClass'),
+      studentBoard: document.getElementById('studentBoard'),
+      studentLanguage: document.getElementById('studentLanguage'),
+      saveInfoBtn: document.getElementById('saveInfoBtn')
+    };
+
+    function readJson(key, fallback) {
+      try {
+        const raw = localStorage.getItem(key);
+        return raw ? JSON.parse(raw) : fallback;
+      } catch {
+        return fallback;
+      }
+    }
+
+    function getAccounts() {
+      const data = readJson(ACCOUNTS_KEY, []);
+      return Array.isArray(data) ? data : [];
+    }
+
+    function getProfiles() {
+      const data = readJson(PROFILES_KEY, {});
+      return (data && typeof data === 'object' && !Array.isArray(data)) ? data : {};
+    }
+
+    function saveAccounts(list) {
+      try {
+        localStorage.setItem(ACCOUNTS_KEY, JSON.stringify(list));
+        return true;
+      } catch {
+        showMessage('Browser storage is full or blocked.', 'error');
+        return false;
+      }
+    }
+
+    function saveProfiles(map) {
+      try {
+        localStorage.setItem(PROFILES_KEY, JSON.stringify(map));
+        return true;
+      } catch {
+        showMessage('Could not save profile to browser storage.', 'error');
+        return false;
+      }
+    }
+
+    function getSessionEmail() {
+      try { return (localStorage.getItem(SESSION_KEY) || '').trim(); }
+      catch { return ''; }
+    }
+
+    function saveSession(email) {
+      try { localStorage.setItem(SESSION_KEY, email); } catch {}
+    }
+
+    function clearSession() {
+      try { localStorage.removeItem(SESSION_KEY); } catch {}
+    }
+
+    // Uses Web Crypto SHA-256 on HTTPS/localhost, with a deterministic offline fallback for file://
+    async function hashPassword(plainText) {
+      if (window.crypto && window.crypto.subtle) {
+        const bytes = new TextEncoder().encode(plainText);
+        const buf = await window.crypto.subtle.digest('SHA-256', bytes);
+        return Array.from(new Uint8Array(buf))
+          .map(b => b.toString(16).padStart(2, '0'))
+          .join('');
+      }
+      // Fallback hash for file:// protocol
+      let h1 = 0xdeadbeef, h2 = 0x41c6ce57;
+      for (let i = 0; i < plainText.length; i++) {
+        const ch = plainText.charCodeAt(i);
+        h1 = Math.imul(h1 ^ ch, 2654435761);
+        h2 = Math.imul(h2 ^ ch, 1597334677);
+      }
+      h1 = Math.imul(h1 ^ (h1 >>> 16), 2246822507) ^ Math.imul(h2 ^ (h2 >>> 13), 3266489909);
+      h2 = Math.imul(h2 ^ (h2 >>> 16), 2246822507) ^ Math.imul(h1 ^ (h1 >>> 13), 3266489909);
+      return 'fb_' + (4294967296 * (2097151 & h2) + (h1 >>> 0)).toString(16);
+    }
+
+    function showMessage(text, type) {
+      const safeType = (type === 'success' || type === 'error' || type === 'info') ? type : 'info';
+      el.messageBox.textContent = text;
+      el.messageBox.className = 'message ' + safeType;
+    }
+
+    function hideMessage() {
+      el.messageBox.textContent = '';
+      el.messageBox.className = 'message hidden';
+    }
+
+    function setButtonBusy(btn, busy, label) {
+      btn.disabled = busy;
+      btn.textContent = label;
+    }
+
+    function switchAuthTab(tabName) {
+      const showLogin = tabName === 'login';
+      el.loginTabBtn.classList.toggle('active', showLogin);
+      el.signupTabBtn.classList.toggle('active', !showLogin);
+      el.loginForm.classList.toggle('active', showLogin);
+      el.signupForm.classList.toggle('active', !showLogin);
+    }
+
+    async function handleCreateAccount(e) {
+      e.preventDefault();
+      hideMessage();
+
+      const username = el.signupUsername.value.trim();
+      const email = el.signupEmail.value.trim();
+      const password = el.signupPassword.value;
+      const confirm = el.signupConfirm.value;
+
+      if (username.length < 3 || username.length > 30) {
+        return showMessage('Username must be between 3 and 30 characters.', 'error');
+      }
+      if (!EMAIL_PATTERN.test(email)) {
+        el.signupEmail.classList.add('input-error');
+        el.signupEmail.focus();
+        return showMessage('Incorrect Email! Use @gmail.com, @yahoo.com, @outlook.com, etc.', 'error');
+      }
+      el.signupEmail.classList.remove('input-error');
+      if (!PASS_PATTERN.test(password)) {
+        el.signupPassword.classList.add('input-error');
+        el.signupPassword.focus();
+      return showMessage('Password must be 8+ chars with 1 Uppercase, 1 Lowercase, 3 Numbers & 1 Special Character (@, $, #, etc.).', 'error');      }
+      el.signupPassword.classList.remove('input-error');
+      if (password !== confirm) {
+        return showMessage('Passwords do not match.', 'error');
+      }
+
+      const accounts = getAccounts();
+      const lowerUser = username.toLowerCase();
+      const lowerEmail = email.toLowerCase();
+
+      if (accounts.some(a => String(a.username || '').toLowerCase() === lowerUser)) {
+        return showMessage('This username is already taken. Choose another.', 'error');
+      }
+      if (accounts.some(a => String(a.email || '').toLowerCase() === lowerEmail)) {
+        return showMessage('This email is already registered. Please login.', 'error');
+      }
+
+      setButtonBusy(el.signupSubmitBtn, true, 'Creating Account...');
+      try {
+        const passwordHash = await hashPassword(password);
+        accounts.push({ username, email, passwordHash, createdAt: new Date().toISOString() });
+        if (!saveAccounts(accounts)) return;
+
+        switchAuthTab('login');
+        el.signupForm.reset();
+        el.loginIdentifier.value = email;
+        el.loginPassword.value = '';
+        showMessage('Account created! Now login to complete your profile.', 'success');
+      } catch {
+        showMessage('Something went wrong. Please try again.', 'error');
+      } finally {
+        setButtonBusy(el.signupSubmitBtn, false, 'Create My Account →');
+      }
+    }
+
+    async function handleLogin(e) {
+      e.preventDefault();
+      hideMessage();
+
+      const identifier = el.loginIdentifier.value.trim();
+      const password = el.loginPassword.value;
+      if (!identifier || !password) {
+        return showMessage('Please enter your username/email and password.', 'error');
+      }
+
+      const lowerId = identifier.toLowerCase();
+      const account = getAccounts().find(a =>
+        String(a.username || '').toLowerCase() === lowerId ||
+        String(a.email || '').toLowerCase() === lowerId
+      );
+
+      if (!account) {
+        return showMessage('Account not found. Check your username or email.', 'error');
+      }
+
+      setButtonBusy(el.loginSubmitBtn, true, 'Verifying...');
+      try {
+        const enteredHash = await hashPassword(password);
+        if (enteredHash !== account.passwordHash) {
+          return showMessage('Incorrect password. Please try again.', 'error');
+        }
+
+        saveSession(account.email);
+        el.loginForm.reset();
+
+        const profiles = getProfiles();
+        const existingProfile = profiles[account.email.toLowerCase()];
+
+        if (existingProfile) {
+          showMessage('Welcome back, ' + existingProfile.name + '! Opening Dashboard...', 'success');
+          setTimeout(() => { window.location.href = 'dashboard.html'; }, 600);
+        } else {
+          openOnboarding(account, false);
+        }
+      } catch {
+        showMessage('Login failed. Please try again.', 'error');
+      } finally {
+        setButtonBusy(el.loginSubmitBtn, false, 'Login to Account →');
+      }
+    }
+
+    function openOnboarding(account, hasProfile) {
+      currentUser = { username: account.username, email: account.email };
+      el.accountUsername.textContent = account.username;
+      el.accountEmail.textContent = account.email;
+
+      el.authSection.classList.add('hidden');
+      el.onboardingSection.classList.remove('hidden');
+      el.backToDashBtn.classList.toggle('hidden', !hasProfile);
+
+      const profiles = getProfiles();
+      const profile = profiles[account.email.toLowerCase()];
+
+      if (profile) {
+        el.studentName.value = profile.name || '';
+        el.studentClass.value = String(profile.studentClass || '');
+        el.studentBoard.value = profile.board || '';
+        el.studentLanguage.value = profile.language || 'en';
+        showMessage('Edit your details below and click Save.', 'info');
+      } else {
+        el.studentForm.reset();
+        el.studentName.value = account.username;
+        showMessage('Almost done! Fill in your student details to launch StudyAI Teacher.', 'info');
+      }
+    }
+
+    async function handleSaveStudentInfo(e) {
+      e.preventDefault();
+      hideMessage();
+      if (!currentUser) return showMessage('Please login first.', 'error');
+
+      const name = el.studentName.value.trim();
+      const studentClass = el.studentClass.value;
+      const board = el.studentBoard.value;
+      const language = el.studentLanguage.value;
+
+      if (!name || !studentClass || !board || !language) {
+        return showMessage('Please fill in all fields.', 'error');
+      }
+
+      setButtonBusy(el.saveInfoBtn, true, 'Saving...');
+      try {
+        const profiles = getProfiles();
+        const key = currentUser.email.toLowerCase();
+        const existing = profiles[key];
+        const now = new Date().toISOString();
+
+        profiles[key] = {
+          username: currentUser.username,
+          email: currentUser.email,
+          name, studentClass, board, language,
+          createdAt: existing ? existing.createdAt : now,
+          updatedAt: now
+        };
+
+        if (saveProfiles(profiles)) {
+          showMessage('Profile saved! Launching StudyAI Dashboard...', 'success');
+          setTimeout(() => { window.location.href = 'dashboard.html'; }, 600);
+        }
+      } finally {
+        setButtonBusy(el.saveInfoBtn, false, 'Save & Enter Dashboard →');
+      }
+    }
+
+    function handleLogout() {
+      currentUser = null;
+      clearSession();
+      el.onboardingSection.classList.add('hidden');
+      el.authSection.classList.remove('hidden');
+      el.loginForm.reset();
+      el.signupForm.reset();
+      el.studentForm.reset();
+      switchAuthTab('login');
+      showMessage('You have been logged out.', 'success');
+    }
+
+    function restoreSession() {
+      const sessionEmail = getSessionEmail();
+      if (!sessionEmail) return;
+
+      const account = getAccounts().find(a =>
+        String(a.email || '').toLowerCase() === sessionEmail.toLowerCase()
+      );
+      if (!account) {
+        clearSession();
+        return;
+      }
+
+      const profiles = getProfiles();
+      const hasProfile = Boolean(profiles[account.email.toLowerCase()]);
+      const isEditMode = new URLSearchParams(window.location.search).get('edit') === '1';
+
+      if (hasProfile && !isEditMode) {
+        window.location.href = 'dashboard.html';
+      } else {
+        openOnboarding(account, hasProfile);
+      }
+    }
+
+    el.loginTabBtn.addEventListener('click', () => { hideMessage(); switchAuthTab('login'); });
+    el.signupTabBtn.addEventListener('click', () => { hideMessage(); switchAuthTab('signup'); });
+    el.loginForm.addEventListener('submit', handleLogin);
+    el.signupForm.addEventListener('submit', handleCreateAccount);
+    el.studentForm.addEventListener('submit', handleSaveStudentInfo);
+    el.logoutBtn.addEventListener('click', handleLogout);
+    el.backToDashBtn.addEventListener('click', () => { window.location.href = 'dashboard.html'; });
+    el.signupEmail.addEventListener('input', () => {
+      const val = el.signupEmail.value.trim();
+      el.signupEmail.classList.toggle('input-error', val.length > 0 && !EMAIL_PATTERN.test(val));
+    });
+    el.signupPassword.addEventListener('input', () => {
+      const val = el.signupPassword.value;
+      el.signupPassword.classList.toggle('input-error', val.length > 0 && !PASS_PATTERN.test(val));
+    });
+    restoreSession();
+  </script>
+</body>
+</html>

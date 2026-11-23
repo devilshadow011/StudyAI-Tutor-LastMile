@@ -1,0 +1,2947 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Master | Smart Learning</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+    --bg: #080d19;
+    --bg-secondary: #0d1526;
+    --surface: #111c30;
+    --surface-2: #16243b;
+    --surface-3: #1b2b45;
+    --primary: #6366f1;
+    --primary-light: #818cf8;
+    --primary-dark: #4f46e5;
+    --cyan: #22d3ee;
+    --green: #34d399;
+    --red: #fb7185;
+    --text: #f1f5f9;
+    --text-secondary: #a5b4c9;
+    --text-muted: #718096;
+    --border: rgba(148, 163, 184, 0.14);
+    --glass: rgba(17, 28, 48, 0.82);
+    --shadow: 0 15px 45px rgba(0, 0, 0, 0.25);
+    --radius: 16px;
+    --transition: 0.25s ease;
+}
+
+body.light-theme {
+    --bg: #f3f6fc;
+    --bg-secondary: #edf1f9;
+    --surface: #ffffff;
+    --surface-2: #f1f5fb;
+    --surface-3: #e6edf8;
+    --text: #172033;
+    --text-secondary: #526078;
+    --text-muted: #8490a3;
+    --border: rgba(15, 23, 42, 0.1);
+    --glass: rgba(255, 255, 255, 0.9);
+    --shadow: 0 12px 35px rgba(15, 23, 42, 0.08);
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+    font-family: 'Inter', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    transition: background var(--transition), color var(--transition);
+}
+button, input, select, textarea { font-family: inherit; }
+button { cursor: pointer; }
+button:focus-visible, select:focus-visible, textarea:focus-visible {
+    outline: 2px solid var(--primary-light);
+    outline-offset: 3px;
+}
+button:disabled { opacity: 0.5; cursor: not-allowed; }
+::selection { background: var(--primary); color: white; }
+::-webkit-scrollbar { width: 7px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: #34425e; border-radius: 20px; }
+
+.ai-teacher-app {
+    min-height: 100vh;
+    width: 100%;
+    overflow: hidden;
+    background: radial-gradient(circle at 80% 0%, rgba(99, 102, 241, 0.09), transparent 30%), var(--bg);
+}
+
+.teacher-header {
+    height: 76px;
+    width: 100%;
+    padding: 0 35px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: var(--glass);
+    backdrop-filter: blur(18px);
+    border-bottom: 1px solid var(--border);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+.teacher-brand { display: flex; align-items: center; gap: 13px; }
+.brand-icon {
+    width: 45px;
+    height: 45px;
+    border-radius: 13px;
+    display: grid;
+    place-items: center;
+    color: white;
+    font-size: 20px;
+    background: linear-gradient(135deg, var(--primary), var(--cyan));
+    box-shadow: 0 5px 20px rgba(99, 102, 241, 0.3);
+}
+.teacher-brand h2 { font-size: 17px; font-weight: 800; letter-spacing: 0.5px; }
+.teacher-brand h2 span { color: var(--primary-light); }
+.teacher-brand p { font-size: 11px; margin-top: 4px; color: var(--text-muted); }
+.header-right { display: flex; align-items: center; gap: 12px; }
+.ai-status {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--green);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-right: 6px;
+}
+.status-dot {
+    height: 8px;
+    width: 8px;
+    background: var(--green);
+    border-radius: 50%;
+    display: inline-block;
+    box-shadow: 0 0 12px var(--green);
+    animation: statusPulse 2s infinite;
+}
+@keyframes statusPulse {
+    50% { opacity: 0.4; box-shadow: 0 0 3px var(--green); }
+}
+.header-btn {
+    width: 38px;
+    height: 38px;
+    border: 1px solid var(--border);
+    background: var(--surface-2);
+    border-radius: 11px;
+    color: var(--text);
+    transition: var(--transition);
+}
+.header-btn:hover { background: var(--primary); color: white; transform: translateY(-2px); }
+
+.teacher-layout { display: flex; min-height: calc(100vh - 125px); }
+
+.teacher-sidebar {
+    width: 255px;
+    min-width: 255px;
+    background: var(--bg-secondary);
+    border-right: 1px solid var(--border);
+    padding: 25px 16px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+.sidebar-profile {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 15px 12px;
+    margin-bottom: 32px;
+    border: 1px solid var(--border);
+    border-radius: 13px;
+    background: var(--surface);
+}
+.profile-avatar {
+    width: 43px;
+    height: 43px;
+    display: grid;
+    place-items: center;
+    background: linear-gradient(135deg, var(--primary), #9333ea);
+    border-radius: 12px;
+    font-size: 18px;
+    color: white;
+}
+.profile-details h3 { font-size: 12px; font-weight: 700; }
+.profile-details p { font-size: 10px; color: var(--text-muted); margin-top: 5px; }
+.menu-heading {
+    color: var(--text-muted);
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 1.2px;
+    padding: 0 12px;
+    margin-bottom: 13px;
+}
+.sidebar-menu { display: flex; flex-direction: column; gap: 7px; }
+.sidebar-link {
+    display: flex;
+    align-items: center;
+    gap: 13px;
+    padding: 14px 13px;
+    border: 1px solid transparent;
+    border-radius: 11px;
+    background: transparent;
+    color: var(--text-secondary);
+    text-align: left;
+    font-size: 12px;
+    font-weight: 600;
+    transition: var(--transition);
+}
+.sidebar-link i { width: 18px; font-size: 15px; }
+.sidebar-link:hover { color: var(--text); background: var(--surface); }
+.sidebar-link.active {
+    color: white;
+    background: linear-gradient(110deg, var(--primary-dark), #6366f1);
+    box-shadow: 0 6px 20px rgba(99, 102, 241, 0.22);
+}
+.sidebar-bottom { margin-top: auto; }
+.sidebar-help {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 15px 12px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    margin-top: 30px;
+}
+.sidebar-help > i { color: var(--cyan); font-size: 20px; }
+.sidebar-help h4 { font-size: 11px; }
+.sidebar-help p { color: var(--text-muted); font-size: 10px; margin-top: 4px; }
+.sidebar-footer { font-size: 10px; text-align: center; color: var(--text-muted); margin-top: 25px; }
+
+.teacher-main { flex: 1; min-width: 0; padding: 32px; max-width: 1600px; }
+.content-section { display: none; animation: fadeUp 0.35s ease; }
+.content-section.active { display: block; }
+@keyframes fadeUp {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.welcome-section {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 30px 35px;
+    border: 1px solid var(--border);
+    border-radius: 19px;
+    background: radial-gradient(circle at 85% 50%, rgba(99, 102, 241, 0.25), transparent 35%), linear-gradient(120deg, #111b32, #182a4b);
+    margin-bottom: 25px;
+    overflow: hidden;
+}
+.welcome-label {
+    display: inline-block;
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 1px;
+    color: #a5b4fc;
+    margin-bottom: 14px;
+}
+.welcome-label i { margin-right: 5px; }
+.welcome-section h1 { font-size: clamp(22px, 3vw, 31px); font-weight: 800; color: white; line-height: 1.3; }
+.welcome-section h1 span { color: #818cf8; }
+.welcome-section p { color: #b5c2d8; font-size: 12px; line-height: 1.8; margin-top: 12px; max-width: 570px; }
+.welcome-illustration {
+    font-size: 85px;
+    color: #818cf8;
+    padding: 15px 40px;
+    animation: floatRobot 4s ease-in-out infinite;
+    filter: drop-shadow(0 0 25px rgba(99, 102, 241, 0.5));
+}
+@keyframes floatRobot {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-12px); }
+}
+
+.selection-panel {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 25px;
+    margin-bottom: 25px;
+    box-shadow: var(--shadow);
+}
+.panel-heading { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; }
+.panel-heading h2 { font-size: 17px; font-weight: 800; }
+.panel-heading h2 i { color: var(--primary-light); margin-right: 7px; }
+.panel-heading p { color: var(--text-muted); font-size: 11px; margin-top: 7px; }
+.step-label {
+    font-size: 10px;
+    font-weight: 800;
+    color: var(--primary-light);
+    background: rgba(99, 102, 241, 0.12);
+    padding: 8px 12px;
+    border-radius: 8px;
+}
+.selection-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; }
+.form-group { display: flex; flex-direction: column; gap: 9px; min-width: 0; }
+.form-group.full-width { grid-column: 1 / -1; }
+.form-group label { font-size: 11px; font-weight: 700; color: var(--text-secondary); }
+.form-group label i { color: var(--primary-light); margin-right: 6px; }
+.form-group select {
+    width: 100%;
+    height: 47px;
+    padding: 0 14px;
+    color: var(--text);
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    outline: none;
+    font-size: 12px;
+    transition: var(--transition);
+}
+.form-group select:focus { border-color: var(--primary-light); box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.12); }
+.form-group select:disabled { opacity: 0.55; cursor: not-allowed; }
+.form-group select option { background: var(--surface); color: var(--text); }
+.selection-footer {
+    margin-top: 25px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 15px;
+}
+.selection-info { font-size: 10px; color: var(--text-muted); }
+.selection-info i { color: var(--cyan); margin-right: 5px; }
+.start-learning-btn {
+    border: none;
+    padding: 13px 22px;
+    color: white;
+    background: linear-gradient(120deg, var(--primary), #8b5cf6);
+    border-radius: 10px;
+    font-size: 12px;
+    font-weight: 700;
+    box-shadow: 0 5px 18px rgba(99, 102, 241, 0.25);
+    transition: var(--transition);
+}
+.start-learning-btn:hover { transform: translateY(-3px); box-shadow: 0 9px 25px rgba(99, 102, 241, 0.4); }
+.start-learning-btn i { margin-right: 7px; }
+
+.classroom-container {
+    display: none;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 25px;
+    margin-bottom: 25px;
+    box-shadow: var(--shadow);
+    animation: fadeUp 0.4s ease;
+}
+.classroom-container.active { display: block; }
+.classroom-topbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 15px;
+    padding-bottom: 22px;
+    border-bottom: 1px solid var(--border);
+}
+.live-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 9px;
+    font-weight: 800;
+    letter-spacing: 1px;
+    color: var(--green);
+}
+.live-label .status-dot { height: 6px; width: 6px; }
+.classroom-topbar h2 { font-size: 19px; margin-top: 10px; }
+.classroom-topbar p { font-size: 11px; color: var(--text-muted); margin-top: 7px; }
+.lesson-language {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--primary-light);
+    background: rgba(99, 102, 241, 0.12);
+    padding: 10px 13px;
+    border-radius: 9px;
+    font-size: 11px;
+    font-weight: 700;
+}
+
+.ai-teacher-stage { display: grid; grid-template-columns: 0.75fr 1.6fr; gap: 22px; padding: 25px 0; }
+.teacher-avatar-area {
+    min-height: 300px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    background: radial-gradient(circle at center, rgba(99, 102, 241, 0.15), transparent 65%), var(--surface-2);
+}
+.teacher-avatar-glow {
+    height: 125px;
+    width: 125px;
+    display: grid;
+    place-items: center;
+    border-radius: 50%;
+    background: rgba(99, 102, 241, 0.12);
+    border: 1px solid rgba(129, 140, 248, 0.3);
+    animation: avatarGlow 3s infinite;
+}
+@keyframes avatarGlow {
+    50% { box-shadow: 0 0 20px rgba(99, 102, 241, 0.2), 0 0 45px rgba(99, 102, 241, 0.15); }
+}
+.teacher-avatar {
+    height: 90px;
+    width: 90px;
+    display: grid;
+    place-items: center;
+    border-radius: 50%;
+    font-size: 42px;
+    color: white;
+    background: linear-gradient(140deg, #6366f1, #9333ea);
+    box-shadow: 0 8px 30px rgba(99, 102, 241, 0.4);
+}
+.teacher-speaking-status { color: var(--green); font-size: 10px; margin-top: 19px; text-align: center; padding: 0 10px; }
+.teacher-avatar-area h3 { font-size: 14px; margin-top: 9px; }
+.teacher-avatar-area p { color: var(--text-muted); font-size: 10px; margin-top: 5px; }
+
+.teaching-content {
+    min-width: 0;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 22px;
+}
+.teaching-heading {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 17px;
+    border-bottom: 1px solid var(--border);
+}
+.teaching-heading span { color: var(--primary-light); font-size: 9px; font-weight: 800; letter-spacing: 1px; }
+.teaching-heading h3 { font-size: 16px; margin-top: 6px; }
+.teaching-heading > i { color: var(--primary-light); font-size: 21px; }
+.lesson-output {
+    min-height: 190px;
+    max-height: 420px;
+    overflow-y: auto;
+    padding: 20px 3px;
+    color: var(--text-secondary);
+    font-size: 13px;
+    line-height: 1.85;
+}
+.lesson-output h2, .lesson-output h3 { color: var(--text); margin: 14px 0 8px; }
+.lesson-output h2 { font-size: 17px; }
+.lesson-output h3 { font-size: 14px; }
+.lesson-output p { margin-bottom: 12px; }
+.lesson-output ul, .lesson-output ol { padding-left: 22px; margin-bottom: 15px; }
+.lesson-output li { margin-bottom: 6px; }
+.lesson-output strong { color: var(--primary-light); }
+.lesson-output .lesson-block {
+    padding: 14px;
+    margin: 12px 0;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+}
+.empty-lesson {
+    min-height: 180px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+.empty-lesson i { font-size: 35px; color: var(--primary-light); margin-bottom: 15px; }
+.empty-lesson h3 { font-size: 14px; }
+.empty-lesson p { color: var(--text-muted); font-size: 11px; max-width: 350px; margin-top: 8px; }
+
+.teaching-controls {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 13px;
+    padding: 17px 0;
+    border-top: 1px solid var(--border);
+}
+.control-btn, .play-control {
+    display: grid;
+    place-items: center;
+    border: 1px solid var(--border);
+    border-radius: 50%;
+    color: var(--text-secondary);
+    background: var(--surface);
+    transition: var(--transition);
+}
+.control-btn { height: 38px; width: 38px; font-size: 12px; }
+.play-control {
+    height: 49px;
+    width: 49px;
+    color: white;
+    font-size: 16px;
+    background: linear-gradient(135deg, var(--primary), #9333ea);
+    border: none;
+    box-shadow: 0 5px 20px rgba(99, 102, 241, 0.3);
+}
+.control-btn:hover { background: var(--primary); color: white; transform: scale(1.08); }
+.play-control:hover { transform: scale(1.1); }
+
+.lesson-progress { padding-top: 12px; }
+.progress-info { display: flex; justify-content: space-between; font-size: 10px; color: var(--text-muted); margin-bottom: 9px; }
+.progress-info span:last-child { color: var(--primary-light); font-weight: 800; }
+.progress-track { width: 100%; height: 6px; background: var(--surface-3); border-radius: 20px; overflow: hidden; }
+.progress-fill { height: 100%; width: 0%; background: linear-gradient(90deg, var(--primary), var(--cyan)); border-radius: 20px; transition: width 0.3s ease; }
+
+.lesson-tools {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 13px;
+    border-radius: 12px;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+}
+.lesson-tool {
+    flex: 1;
+    min-width: 100px;
+    border: 1px solid transparent;
+    background: transparent;
+    color: var(--text-secondary);
+    border-radius: 8px;
+    padding: 12px 8px;
+    font-size: 11px;
+    font-weight: 700;
+    transition: var(--transition);
+}
+.lesson-tool i { margin-right: 5px; }
+.lesson-tool:hover { background: var(--surface); color: var(--text); }
+.lesson-tool.active { color: white; background: var(--primary); }
+.lesson-tab-content { padding: 22px 5px 5px; }
+.lesson-tab-panel { display: none; animation: fadeUp 0.3s ease; }
+.lesson-tab-panel.active { display: block; }
+.lesson-tab-panel h3 { font-size: 15px; margin-bottom: 12px; color: var(--text); }
+.lesson-tab-panel p, .lesson-tab-panel div, .lesson-tab-panel li { font-size: 13px; line-height: 1.8; color: var(--text-secondary); }
+.lesson-tab-panel ul { padding-left: 20px; margin-top: 8px; }
+.lesson-tab-panel .lesson-block { padding: 14px; margin: 12px 0; border-radius: 10px; border: 1px solid var(--border); background: var(--surface-2); }
+.lesson-tab-panel strong { color: var(--primary-light); }
+
+.doubt-section {
+    margin-top: 30px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 25px;
+    box-shadow: var(--shadow);
+}
+.doubt-heading { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; gap: 12px; }
+.doubt-heading span { font-size: 9px; color: var(--primary-light); font-weight: 800; letter-spacing: 1px; }
+.doubt-heading h2 { font-size: 19px; margin-top: 7px; }
+.doubt-heading p { font-size: 11px; color: var(--text-muted); margin-top: 6px; }
+.doubt-actions { display: flex; align-items: center; gap: 10px; }
+.voice-toggle-btn {
+    padding: 9px 13px;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    background: var(--surface-2);
+    color: var(--primary-light);
+    font-size: 11px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+.voice-toggle-btn.muted { color: var(--text-muted); }
+.doubt-icon {
+    width: 50px;
+    height: 50px;
+    display: grid;
+    place-items: center;
+    color: var(--primary-light);
+    background: rgba(99, 102, 241, 0.13);
+    border-radius: 13px;
+    font-size: 21px;
+}
+.chat-container { border: 1px solid var(--border); border-radius: 13px; background: var(--surface-2); overflow: hidden; }
+.chat-messages {
+    min-height: 170px;
+    max-height: 360px;
+    overflow-y: auto;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+.ai-message, .student-message { display: flex; gap: 12px; align-items: flex-start; }
+.student-message { flex-direction: row-reverse; }
+.chat-avatar {
+    width: 35px;
+    height: 35px;
+    min-width: 35px;
+    display: grid;
+    place-items: center;
+    border-radius: 10px;
+    background: linear-gradient(135deg, var(--primary), #9333ea);
+    color: white;
+    font-size: 14px;
+}
+.student-message .chat-avatar { background: linear-gradient(135deg, #0d9488, #22c55e); }
+.message-content {
+    max-width: 85%;
+    padding: 12px 15px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 4px 13px 13px 13px;
+}
+.student-message .message-content { border-radius: 13px 4px 13px 13px; }
+.msg-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 7px;
+}
+.msg-header span { font-size: 9px; font-weight: 800; color: var(--primary-light); }
+.msg-speak-btn {
+    background: rgba(99, 102, 241, 0.15);
+    border: 1px solid var(--border);
+    color: var(--primary-light);
+    border-radius: 6px;
+    padding: 3px 8px;
+    font-size: 10px;
+    font-weight: 600;
+}
+.msg-speak-btn:hover { background: var(--primary); color: white; }
+.message-content p { color: var(--text-secondary); font-size: 12.5px; line-height: 1.8; overflow-wrap: anywhere; white-space: pre-line; }
+.chat-input-area { display: flex; align-items: center; gap: 10px; padding: 13px; border-top: 1px solid var(--border); }
+.chat-input-area textarea {
+    flex: 1;
+    min-width: 0;
+    resize: none;
+    max-height: 120px;
+    padding: 12px 14px;
+    border-radius: 9px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--text);
+    font-size: 12px;
+    outline: none;
+}
+.chat-input-area textarea:focus { border-color: var(--primary-light); }
+.chat-icon-btn, .send-question-btn {
+    width: 42px;
+    height: 42px;
+    min-width: 42px;
+    display: grid;
+    place-items: center;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    color: var(--text-secondary);
+    background: var(--surface);
+    transition: var(--transition);
+}
+.chat-icon-btn:hover { color: white; background: var(--primary); }
+.send-question-btn { color: white; background: var(--primary); border: none; }
+.send-question-btn:hover { background: var(--primary-dark); transform: scale(1.05); }
+.chat-disclaimer { text-align: center; font-size: 9px; color: var(--text-muted); padding: 10px; }
+
+.page-heading { padding: 20px 0 25px; }
+.page-heading span { font-size: 10px; font-weight: 800; letter-spacing: 1px; color: var(--primary-light); }
+.page-heading h1 { font-size: 27px; margin-top: 10px; }
+.page-heading p { font-size: 12px; color: var(--text-muted); margin-top: 9px; }
+
+.notes-container { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 25px; }
+.empty-state { min-height: 260px; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
+.empty-state > i { font-size: 42px; color: var(--primary-light); margin-bottom: 17px; }
+.empty-state h3 { font-size: 16px; }
+.empty-state p { color: var(--text-muted); font-size: 11px; margin-top: 8px; }
+.note-card { padding: 18px; border: 1px solid var(--border); border-radius: 12px; background: var(--surface-2); margin-bottom: 12px; }
+.note-card h3 { font-size: 14px; margin-bottom: 10px; }
+.note-card p { font-size: 12px; color: var(--text-secondary); line-height: 1.8; margin-bottom: 10px; }
+.note-card ul { padding-left: 20px; margin-bottom: 12px; }
+.note-card li { font-size: 12px; color: var(--text-secondary); line-height: 1.7; margin-bottom: 5px; }
+.back-notes-btn {
+    margin-top: 12px;
+    padding: 11px 18px;
+    border: none;
+    border-radius: 9px;
+    color: white;
+    background: var(--primary);
+    font-weight: 700;
+    font-size: 12px;
+}
+
+.progress-cards { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 17px; }
+.stat-card {
+    padding: 24px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    transition: var(--transition);
+}
+.stat-card:hover { transform: translateY(-5px); border-color: var(--primary); }
+.stat-card i {
+    width: 43px;
+    height: 43px;
+    display: grid;
+    place-items: center;
+    border-radius: 12px;
+    color: var(--primary-light);
+    background: rgba(99, 102, 241, 0.13);
+    font-size: 18px;
+    margin-bottom: 17px;
+}
+.stat-card h2 { font-size: 27px; font-weight: 800; }
+.stat-card p { color: var(--text-muted); font-size: 11px; margin-top: 7px; }
+
+.teacher-footer {
+    padding: 20px 30px;
+    border-top: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    color: var(--text-muted);
+    font-size: 10px;
+    background: var(--bg-secondary);
+}
+
+.typing-indicator { display: flex; align-items: center; gap: 5px; padding: 10px; }
+.typing-indicator span {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--primary-light);
+    animation: typing 1s infinite alternate;
+}
+.typing-indicator span:nth-child(2) { animation-delay: 0.2s; }
+.typing-indicator span:nth-child(3) { animation-delay: 0.4s; }
+@keyframes typing { to { opacity: 0.3; transform: translateY(-4px); } }
+
+@media (max-width: 1100px) {
+    .teacher-sidebar { width: 215px; min-width: 215px; }
+    .teacher-main { padding: 23px; }
+    .ai-teacher-stage { grid-template-columns: 1fr; }
+    .teacher-avatar-area { min-height: 240px; }
+    .teacher-avatar-glow { height: 105px; width: 105px; }
+    .teacher-avatar { height: 75px; width: 75px; font-size: 34px; }
+}
+
+@media (max-width: 768px) {
+    .teacher-header { height: 65px; padding: 0 15px; }
+    .teacher-brand h2 { font-size: 13px; }
+    .teacher-brand p { font-size: 9px; }
+    .brand-icon { height: 39px; width: 39px; font-size: 17px; }
+    .header-right { gap: 8px; }
+    .ai-status { display: none; }
+    .header-btn { height: 34px; width: 34px; }
+    .teacher-layout { display: block; }
+    .teacher-sidebar {
+        width: 100%;
+        min-width: 0;
+        padding: 10px 12px;
+        border-right: none;
+        border-bottom: 1px solid var(--border);
+    }
+    .sidebar-profile, .sidebar-bottom { display: none; }
+    .sidebar-menu { flex-direction: row; gap: 6px; overflow-x: auto; padding-bottom: 3px; }
+    .menu-heading { display: none; }
+    .sidebar-link { flex: 0 0 auto; padding: 11px 13px; font-size: 10px; gap: 7px; }
+    .sidebar-link i { font-size: 12px; }
+    .teacher-main { padding: 17px 13px; }
+    .welcome-section { padding: 23px 19px; }
+    .welcome-section h1 { font-size: 22px; }
+    .welcome-section p { font-size: 10px; }
+    .welcome-illustration { font-size: 48px; padding: 8px; }
+    .selection-panel, .classroom-container, .doubt-section { padding: 17px; }
+    .selection-grid { grid-template-columns: 1fr; gap: 15px; }
+    .form-group.full-width { grid-column: auto; }
+    .selection-footer { flex-direction: column; align-items: stretch; }
+    .selection-info { line-height: 1.7; }
+    .start-learning-btn { width: 100%; }
+    .classroom-topbar h2 { font-size: 16px; }
+    .ai-teacher-stage { gap: 15px; }
+    .teacher-avatar-area { min-height: 220px; }
+    .teaching-content { padding: 15px; }
+    .lesson-tools { gap: 5px; padding: 8px; }
+    .lesson-tool { min-width: 75px; padding: 10px 5px; font-size: 10px; }
+    .doubt-heading h2 { font-size: 16px; }
+    .progress-cards { grid-template-columns: 1fr; }
+    .stat-card { padding: 19px; }
+    .teacher-footer { flex-direction: column; text-align: center; padding: 18px 12px; }
+}
+
+@media (max-width: 420px) {
+    .teacher-brand h2 { font-size: 11px; }
+    .teacher-brand p { font-size: 8px; }
+    .brand-icon { height: 35px; width: 35px; }
+    .welcome-section { padding: 19px 15px; }
+    .welcome-section h1 { font-size: 19px; }
+    .welcome-illustration { font-size: 35px; }
+    .panel-heading h2 { font-size: 14px; }
+    .panel-heading p { font-size: 10px; line-height: 1.6; }
+    .step-label { font-size: 8px; padding: 7px; }
+    .classroom-topbar { align-items: flex-start; flex-direction: column; }
+    .lesson-language { font-size: 10px; }
+    .teaching-controls { gap: 8px; }
+    .control-btn { height: 34px; width: 34px; }
+    .play-control { height: 43px; width: 43px; }
+    .chat-input-area { gap: 6px; padding: 9px; }
+    .chat-icon-btn, .send-question-btn { height: 36px; width: 36px; min-width: 36px; }
+    .chat-input-area textarea { padding: 10px; font-size: 10px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        scroll-behavior: auto !important;
+        transition-duration: 0.01ms !important;
+    }
+}
+
+@media print {
+    .teacher-header, .teacher-sidebar, .teacher-footer, .doubt-section, .teaching-controls { display: none !important; }
+    body { background: white; color: black; }
+    .teacher-main { padding: 0; }
+    .lesson-output { max-height: none; overflow: visible; }
+}
+</style>
+</head>
+
+<body>
+
+<div class="ai-teacher-app">
+
+    <header class="teacher-header">
+        <div class="teacher-brand">
+            <div class="brand-icon">
+                <i class="fa-solid fa-graduation-cap"></i>
+            </div>
+            <div>
+                <h2>AI <span>Master</span></h2>
+                <p>Smart Learning Assistant</p>
+            </div>
+        </div>
+
+        <div class="header-right">
+            <div class="ai-status">
+                <span class="status-dot"></span>
+                AI Teacher Online
+            </div>
+            <button class="header-btn" id="dashboardBackBtn" title="Back to Dashboard" onclick="window.location.href='dashboard.html'">
+                <i class="fa-solid fa-house"></i>
+            </button>
+            <button class="header-btn" id="themeToggle" title="Toggle theme">
+                <i class="fa-solid fa-moon"></i>
+            </button>
+            <button class="header-btn" id="fullscreenBtn" title="Fullscreen">
+                <i class="fa-solid fa-expand"></i>
+            </button>
+        </div>
+    </header>
+
+    <main class="teacher-layout">
+
+        <aside class="teacher-sidebar">
+            <div class="sidebar-profile">
+                <div class="profile-avatar">
+                    <i class="fa-solid fa-user-graduate"></i>
+                </div>
+                <div class="profile-details">
+                    <h3>Student Learning</h3>
+                    <p>Personal AI Classroom</p>
+                </div>
+            </div>
+
+            <div class="sidebar-menu">
+                <p class="menu-heading">LEARNING MENU</p>
+                <button class="sidebar-link active" data-section="classroom">
+                    <i class="fa-solid fa-chalkboard-user"></i>
+                    <span>AI Classroom</span>
+                </button>
+                <button class="sidebar-link" data-section="notes">
+                    <i class="fa-solid fa-book-open"></i>
+                    <span>My Notes</span>
+                </button>
+                <button class="sidebar-link" data-section="progress">
+                    <i class="fa-solid fa-chart-line"></i>
+                    <span>Learning Progress</span>
+                </button>
+            </div>
+
+            <div class="sidebar-bottom">
+                <div class="sidebar-help">
+                    <i class="fa-solid fa-circle-question"></i>
+                    <div>
+                        <h4>Need Help?</h4>
+                        <p>Ask your AI Teacher</p>
+                    </div>
+                </div>
+                <div class="sidebar-footer">
+                    Powered by DEVIL AI
+                </div>
+            </div>
+        </aside>
+
+        <section class="teacher-main">
+
+            <section class="content-section active" id="classroom">
+
+                <div class="welcome-section">
+                    <div>
+                        <span class="welcome-label">
+                            <i class="fa-solid fa-sparkles"></i>
+                            YOUR PERSONAL LEARNING SPACE
+                        </span>
+                        <h1>Learn Smarter with <span>AI Teacher</span></h1>
+                        <p>
+                            Your personal AI tutor is ready to teach you
+                            Mathematics and Science in your preferred language.
+                        </p>
+                    </div>
+                    <div class="welcome-illustration">
+                        <i class="fa-solid fa-robot"></i>
+                    </div>
+                </div>
+
+                <div class="selection-panel">
+                    <div class="panel-heading">
+                        <div>
+                            <h2><i class="fa-solid fa-book-open"></i> Start Learning</h2>
+                            <p>Choose your class, subject and learning topic.</p>
+                        </div>
+                        <span class="step-label">STEP 01</span>
+                    </div>
+
+                    <div class="selection-grid">
+                        <div class="form-group">
+                            <label for="classSelect"><i class="fa-solid fa-school"></i> Select Class</label>
+                            <select id="classSelect">
+                                <option value="">Choose Class</option>
+                                <option value="5">Class 5</option>
+                                <option value="6">Class 6</option>
+                                <option value="7">Class 7</option>
+                                <option value="8">Class 8</option>
+                                <option value="9">Class 9</option>
+                                <option value="10">Class 10</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="boardSelect"><i class="fa-solid fa-certificate"></i> Select Board</label>
+                            <select id="boardSelect">
+                                <option value="CBSE">CBSE</option>
+                                <option value="NCERT">NCERT</option>
+                                <option value="State Board">State Board</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="subjectSelect"><i class="fa-solid fa-atom"></i> Select Subject</label>
+                            <select id="subjectSelect">
+                                <option value="">Choose Subject</option>
+                                <option value="Mathematics">Mathematics</option>
+                                <option value="Science">Science</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="languageSelect"><i class="fa-solid fa-language"></i> Teaching Language</label>
+                            <select id="languageSelect">
+                                <option value="hi-IN">Hindi - हिंदी</option>
+                                <option value="en-IN">English</option>
+                                <option value="bn-IN">Bengali - বাংলা</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group full-width">
+                            <label for="chapterSelect"><i class="fa-solid fa-book"></i> Select Chapter</label>
+                            <select id="chapterSelect" disabled>
+                                <option value="">First select class and subject</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group full-width">
+                            <label for="topicSelect"><i class="fa-solid fa-list-check"></i> Select Topic</label>
+                            <select id="topicSelect" disabled>
+                                <option value="">First select a chapter</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="selection-footer">
+                        <div class="selection-info">
+                            <i class="fa-solid fa-circle-info"></i>
+                            Select your learning preferences to begin.
+                        </div>
+                        <button class="start-learning-btn" id="startTeachingBtn">
+                            <i class="fa-solid fa-play"></i>
+                            Start Teaching
+                        </button>
+                    </div>
+                </div>
+
+                <div class="classroom-container" id="classroomContainer">
+                    <div class="classroom-topbar">
+                        <div>
+                            <span class="live-label">
+                                <span class="status-dot"></span>
+                                LIVE LEARNING SESSION
+                            </span>
+                            <h2 id="currentLessonTitle">Your AI Classroom</h2>
+                            <p id="currentLessonDetails">Select a topic to begin learning.</p>
+                        </div>
+                        <div class="lesson-language">
+                            <i class="fa-solid fa-language"></i>
+                            <span id="activeLanguage">Hindi (हिंदी)</span>
+                        </div>
+                    </div>
+
+                    <div class="ai-teacher-stage">
+                        <div class="teacher-avatar-area">
+                            <div class="teacher-avatar-glow">
+                                <div class="teacher-avatar">
+                                    <i class="fa-solid fa-robot"></i>
+                                </div>
+                            </div>
+                            <span class="teacher-speaking-status" id="teacherStatus">AI Teacher is ready</span>
+                            <h3>AI Master</h3>
+                            <p>Your personal digital tutor</p>
+                        </div>
+
+                        <div class="teaching-content">
+                            <div class="teaching-heading">
+                                <div>
+                                    <span id="explanationSubLabel">LESSON EXPLANATION</span>
+                                    <h3 id="explanationHeadLabel">Today's Learning</h3>
+                                </div>
+                                <i class="fa-solid fa-wand-magic-sparkles"></i>
+                            </div>
+
+                            <div class="lesson-output" id="lessonOutput">
+                                <div class="empty-lesson">
+                                    <i class="fa-solid fa-book-open-reader"></i>
+                                    <h3>Ready to Learn?</h3>
+                                    <p>
+                                        Select your class, subject, chapter and topic.
+                                        Your AI teacher will explain everything step by step.
+                                    </p>
+                                </div>
+                            </div>
+
+                            <div class="teaching-controls">
+                                <button id="previousLessonBtn" class="control-btn" title="Previous">
+                                    <i class="fa-solid fa-backward-step"></i>
+                                </button>
+                                <button id="playLessonBtn" class="play-control" title="Play">
+                                    <i class="fa-solid fa-play"></i>
+                                </button>
+                                <button id="pauseLessonBtn" class="control-btn" title="Pause">
+                                    <i class="fa-solid fa-pause"></i>
+                                </button>
+                                <button id="repeatLessonBtn" class="control-btn" title="Repeat">
+                                    <i class="fa-solid fa-repeat"></i>
+                                </button>
+                                <button id="nextLessonBtn" class="control-btn" title="Next">
+                                    <i class="fa-solid fa-forward-step"></i>
+                                </button>
+                            </div>
+
+                            <div class="lesson-progress">
+                                <div class="progress-info">
+                                    <span>Lesson Progress</span>
+                                    <span id="lessonProgressText">0%</span>
+                                </div>
+                                <div class="progress-track">
+                                    <div class="progress-fill" id="lessonProgressBar"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="lesson-tools">
+                        <button class="lesson-tool active" data-tab="notes">
+                            <i class="fa-solid fa-note-sticky"></i>
+                            <span id="tabNotesLabel">Notes</span>
+                        </button>
+                        <button class="lesson-tool" data-tab="examples">
+                            <i class="fa-solid fa-lightbulb"></i>
+                            <span id="tabExamplesLabel">Examples</span>
+                        </button>
+                    </div>
+
+                    <div class="lesson-tab-content" id="lessonTabContent">
+                        <div class="lesson-tab-panel active" id="notesPanel">
+                            <h3 id="notesHeadingLabel">Smart Notes</h3>
+                            <div id="smartNotes">Select a topic and click Start Teaching to generate notes.</div>
+                        </div>
+                        <div class="lesson-tab-panel" id="examplesPanel">
+                            <h3 id="examplesHeadingLabel">Practical Examples</h3>
+                            <div id="practicalExamples">Select a topic and click Start Teaching to see examples.</div>
+                        </div>
+                    </div>
+                </div>
+
+            </section>
+
+            <section class="doubt-section">
+                <div class="doubt-heading">
+                    <div>
+                        <span>AI LEARNING ASSISTANT</span>
+                        <h2 id="doubtMainTitle">Ask Your Doubts</h2>
+                        <p id="doubtSubtitle">अपना कोई भी सवाल या टॉपिक पूछें — AI टीचर हिंदी में लिखकर और बोलकर समझाएगा।</p>
+                    </div>
+                    <div class="doubt-actions">
+                        <button class="voice-toggle-btn" id="chatVoiceToggle" title="Auto Voice Reply">
+                            <i class="fa-solid fa-volume-high"></i>
+                            <span id="chatVoiceLabel">Voice ON</span>
+                        </button>
+                        <div class="doubt-icon">
+                            <i class="fa-solid fa-comments"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="chat-container">
+                    <div class="chat-messages" id="chatMessages">
+                        <div class="ai-message" id="welcomeChatMsg">
+                            <div class="chat-avatar">
+                                <i class="fa-solid fa-robot"></i>
+                            </div>
+                            <div class="message-content">
+                                <div class="msg-header">
+                                    <span>AI Master</span>
+                                    <button type="button" class="msg-speak-btn" id="welcomeSpeakBtn">🔊 सुनें</button>
+                                </div>
+                                <p id="welcomeChatText">नमस्ते! मैं आपका AI टीचर हूँ। गणित या विज्ञान का कोई भी टॉपिक या प्रश्न पूछें — मैं आपकी चुनी हुई भाषा (हिंदी) में लिखकर और बोलकर समझाऊँगा।</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="chat-input-area">
+                        <button class="chat-icon-btn" id="voiceInputBtn" title="Voice input">
+                            <i class="fa-solid fa-microphone"></i>
+                        </button>
+                        <textarea id="studentQuestion" placeholder="यहाँ अपना सवाल या टॉपिक लिखें..." rows="1"></textarea>
+                        <button class="send-question-btn" id="sendQuestionBtn">
+                            <i class="fa-solid fa-paper-plane"></i>
+                        </button>
+                    </div>
+
+                    <p class="chat-disclaimer">
+                        <i class="fa-solid fa-shield-halved"></i>
+                        AI-generated answers may need verification with your textbook.
+                    </p>
+                </div>
+            </section>
+
+            <section class="content-section" id="notes">
+                <div class="page-heading">
+                    <span>YOUR STUDY MATERIAL</span>
+                    <h1>My Learning Notes</h1>
+                    <p>Access summaries and notes from your lessons.</p>
+                </div>
+                <div class="notes-container" id="notesContainer">
+                    <div class="empty-state">
+                        <i class="fa-solid fa-book"></i>
+                        <h3>No Notes Yet</h3>
+                        <p>Start a lesson to generate your notes.</p>
+                    </div>
+                </div>
+            </section>
+
+            <section class="content-section" id="progress">
+                <div class="page-heading">
+                    <span>YOUR PERFORMANCE</span>
+                    <h1>Learning Progress</h1>
+                    <p>Track your learning journey.</p>
+                </div>
+                <div class="progress-cards">
+                    <div class="stat-card">
+                        <i class="fa-solid fa-book-open"></i>
+                        <h2 id="completedLessons">0</h2>
+                        <p>Lessons Completed</p>
+                    </div>
+                    <div class="stat-card">
+                        <i class="fa-solid fa-clock"></i>
+                        <h2 id="learningTime">0 min</h2>
+                        <p>Learning Time</p>
+                    </div>
+                </div>
+            </section>
+
+        </section>
+
+    </main>
+
+    <footer class="teacher-footer">
+        <p>© 2026 AI Master. Smart Learning for Every Student.</p>
+        <span>Learn • Understand • Practice • Grow</span>
+    </footer>
+
+</div>
+
+<script>
+const CONFIG = {
+    STORAGE_KEY: "devil_ai_teacher_v3",
+    DEFAULT_LANGUAGE: "hi-IN",
+    MAX_CHAT_LENGTH: 2000
+};
+
+const $ = (id) => document.getElementById(id);
+
+const classSelect = $("classSelect");
+const boardSelect = $("boardSelect");
+const subjectSelect = $("subjectSelect");
+const languageSelect = $("languageSelect");
+const chapterSelect = $("chapterSelect");
+const topicSelect = $("topicSelect");
+const startTeachingBtn = $("startTeachingBtn");
+const classroomContainer = $("classroomContainer");
+const lessonOutput = $("lessonOutput");
+const currentLessonTitle = $("currentLessonTitle");
+const currentLessonDetails = $("currentLessonDetails");
+const activeLanguage = $("activeLanguage");
+const teacherStatus = $("teacherStatus");
+const playLessonBtn = $("playLessonBtn");
+const pauseLessonBtn = $("pauseLessonBtn");
+const repeatLessonBtn = $("repeatLessonBtn");
+const nextLessonBtn = $("nextLessonBtn");
+const previousLessonBtn = $("previousLessonBtn");
+const lessonProgressBar = $("lessonProgressBar");
+const lessonProgressText = $("lessonProgressText");
+const studentQuestion = $("studentQuestion");
+const sendQuestionBtn = $("sendQuestionBtn");
+const chatMessages = $("chatMessages");
+const voiceInputBtn = $("voiceInputBtn");
+const notesContainer = $("notesContainer");
+const smartNotes = $("smartNotes");
+const practicalExamples = $("practicalExamples");
+const chatVoiceToggle = $("chatVoiceToggle");
+const chatVoiceLabel = $("chatVoiceLabel");
+
+let currentLesson = null;
+let currentLessonHTML = "";
+let currentNotesHTML = "";
+let currentExamplesHTML = "";
+let lastDiscussedTopic = "";
+let speechChunks = [];
+let currentSpeechIndex = 0;
+let isSpeaking = false;
+let isPaused = false;
+let speechSession = 0;
+let speechTimer = null;
+let currentTopicIndex = 0;
+let currentChapterTopics = [];
+let learningStartTime = null;
+let recognition = null;
+let isListening = false;
+let chatAutoVoice = true;
+
+const SYLLABUS = {
+    5: {
+        Mathematics: {
+            "Large Numbers and Operations": ["Reading and Writing Large Numbers", "Place Value", "Addition and Subtraction", "Multiplication", "Division", "Word Problems"],
+            "Fractions": ["Introduction to Fractions", "Types of Fractions", "Equivalent Fractions", "Comparing Fractions", "Addition and Subtraction of Fractions"],
+            "Decimals": ["Understanding Decimals", "Place Value of Decimals", "Comparing Decimals", "Decimal Operations"],
+            "Geometry": ["Basic Geometrical Shapes", "Lines and Angles", "Triangles", "Circles", "Symmetry"],
+            "Measurement": ["Length", "Mass and Weight", "Capacity", "Perimeter", "Area"],
+            "Patterns": ["Number Patterns", "Shape Patterns", "Multiplication Patterns"],
+            "Data Handling": ["Collecting Data", "Tables", "Pictographs", "Bar Graphs"],
+            "Factors and Multiples": ["Factors", "Multiples", "Prime Numbers", "Common Factors", "Common Multiples"]
+        },
+        Science: {
+            "The Living World": ["Characteristics of Living Things", "Plants and Their Parts", "Animals and Their Habitats", "Adaptation"],
+            "Human Body": ["Sense Organs", "Digestive System", "Respiratory System", "Healthy Habits"],
+            "Food and Nutrition": ["Sources of Food", "Nutrients", "Balanced Diet", "Food Preservation"],
+            "Materials Around Us": ["Natural Materials", "Man-made Materials", "Properties of Materials", "Soluble and Insoluble Materials"],
+            "Water": ["Sources of Water", "Water Cycle", "States of Water", "Water Conservation"],
+            "Air and Environment": ["Composition of Air", "Importance of Air", "Pollution", "Environmental Protection"],
+            "Force and Energy": ["Introduction to Force", "Push and Pull", "Forms of Energy", "Uses of Energy"],
+            "Earth and Space": ["The Solar System", "The Sun and Moon", "Day and Night", "Our Planet Earth"]
+        }
+    },
+    6: {
+        Mathematics: {
+            "Patterns in Mathematics": ["Number Patterns", "Sequences", "Geometrical Patterns"],
+            "Number Play": ["Factors", "Multiples", "Prime Numbers", "Divisibility Rules"],
+            "Number Concepts": ["Natural Numbers", "Whole Numbers", "Integers", "Number Line"],
+            "Basic Geometrical Ideas": ["Points and Lines", "Line Segments", "Rays", "Angles", "Polygons"],
+            "Understanding Elementary Shapes": ["Types of Angles", "Triangles", "Quadrilaterals", "Circles", "Three-dimensional Shapes"],
+            "Integers": ["Positive Integers", "Negative Integers", "Addition of Integers", "Subtraction of Integers"],
+            "Fractions": ["Types of Fractions", "Equivalent Fractions", "Comparing Fractions", "Operations on Fractions"],
+            "Decimals": ["Place Value", "Comparing Decimals", "Addition and Subtraction", "Multiplication and Division"],
+            "Data Handling": ["Collection of Data", "Pictographs", "Bar Graphs", "Interpretation of Data"],
+            "Perimeter and Area": ["Perimeter", "Area of Rectangle", "Area of Square", "Units of Measurement"],
+            "Ratio and Proportion": ["Understanding Ratios", "Equivalent Ratios", "Proportion", "Real-life Applications"],
+            "Algebra": ["Variables", "Algebraic Expressions", "Simple Equations", "Patterns in Algebra"]
+        },
+        Science: {
+            "The Wonderful World of Science": ["What is Science", "Observation and Experiments", "Scientific Method"],
+            "Diversity in the Living World": ["Living Organisms", "Classification", "Habitats", "Adaptations"],
+            "Mindful Eating": ["Components of Food", "Nutrients", "Balanced Diet", "Food Sources"],
+            "Exploring Magnets": ["Properties of Magnets", "Magnetic and Non-magnetic Materials", "Magnetic Poles", "Uses of Magnets"],
+            "Measurement of Length and Motion": ["Standard Units", "Measurement", "Types of Motion", "Speed"],
+            "Materials Around Us": ["Properties of Materials", "Solubility", "Classification of Materials"],
+            "Temperature and Heat": ["Temperature", "Thermometers", "Transfer of Heat", "Conductors and Insulators"],
+            "A Journey Through States of Water": ["Solid Liquid and Gas", "Evaporation", "Condensation", "Water Cycle"],
+            "Methods of Separation": ["Handpicking", "Filtration", "Evaporation", "Sedimentation"],
+            "Living Creatures": ["Characteristics of Life", "Plant Life", "Animal Life", "Life Processes"],
+            "Nature's Treasures": ["Natural Resources", "Renewable Resources", "Non-renewable Resources", "Conservation"],
+            "Beyond Earth": ["Solar System", "Stars and Planets", "Moon", "Space Exploration"]
+        }
+    },
+    7: {
+        Mathematics: {
+            "Integers": ["Properties of Integers", "Addition of Integers", "Subtraction of Integers", "Multiplication of Integers", "Division of Integers"],
+            "Fractions and Decimals": ["Multiplication of Fractions", "Division of Fractions", "Decimal Operations", "Word Problems"],
+            "Data Handling": ["Mean", "Median", "Mode", "Probability", "Bar Graphs"],
+            "Simple Equations": ["Introduction to Equations", "Solving Linear Equations", "Transposing Terms", "Word Problems"],
+            "Lines and Angles": ["Complementary Angles", "Supplementary Angles", "Adjacent Angles", "Vertically Opposite Angles", "Parallel Lines"],
+            "Triangles": ["Types of Triangles", "Angle Sum Property", "Exterior Angle Property", "Congruence"],
+            "Comparing Quantities": ["Percentage", "Profit and Loss", "Simple Interest", "Discount"],
+            "Rational Numbers": ["Introduction to Rational Numbers", "Equivalent Rational Numbers", "Comparison", "Operations"],
+            "Perimeter and Area": ["Perimeter", "Area of Triangle", "Area of Parallelogram", "Area of Circle"],
+            "Algebraic Expressions": ["Terms and Coefficients", "Like and Unlike Terms", "Addition and Subtraction", "Simplification"],
+            "Exponents and Powers": ["Powers", "Laws of Exponents", "Standard Form"],
+            "Symmetry": ["Line Symmetry", "Rotational Symmetry"],
+            "Visualising Solid Shapes": ["Three-dimensional Shapes", "Faces Edges and Vertices", "Nets of Solids"]
+        },
+        Science: {
+            "Nutrition in Plants": ["Autotrophic Nutrition", "Photosynthesis", "Saprotrophic Nutrition", "Parasitic Nutrition"],
+            "Nutrition in Animals": ["Human Digestive System", "Digestion", "Nutrition in Amoeba"],
+            "Heat": ["Temperature", "Thermometer", "Conduction", "Convection", "Radiation"],
+            "Acids Bases and Salts": ["Properties of Acids", "Properties of Bases", "Indicators", "Neutralisation"],
+            "Physical and Chemical Changes": ["Physical Changes", "Chemical Changes", "Rusting", "Crystallisation"],
+            "Respiration in Organisms": ["Breathing", "Aerobic Respiration", "Anaerobic Respiration", "Respiratory System"],
+            "Transportation in Animals and Plants": ["Blood", "Heart", "Blood Vessels", "Transport in Plants"],
+            "Reproduction in Plants": ["Asexual Reproduction", "Sexual Reproduction", "Pollination", "Seed Dispersal"],
+            "Motion and Time": ["Speed", "Uniform Motion", "Non-uniform Motion", "Distance-time Graphs"],
+            "Electric Current and Its Effects": ["Electric Circuits", "Heating Effect", "Magnetic Effect", "Electromagnets"],
+            "Light": ["Reflection", "Mirrors", "Images", "Human Eye"],
+            "Forests and Environment": ["Forest Ecosystem", "Food Chains", "Decomposers", "Conservation"],
+            "Wastewater Story": ["Wastewater", "Sewage Treatment", "Sanitation", "Water Management"]
+        }
+    },
+    8: {
+        Mathematics: {
+            "Rational Numbers": ["Properties of Rational Numbers", "Number Line", "Operations on Rational Numbers"],
+            "Linear Equations in One Variable": ["Introduction to Linear Equations", "Solving Equations", "Transposition", "Word Problems"],
+            "Understanding Quadrilaterals": ["Polygons", "Types of Quadrilaterals", "Angle Sum Property", "Properties of Parallelograms"],
+            "Data Handling": ["Organising Data", "Bar Graphs", "Pie Charts", "Probability"],
+            "Squares and Square Roots": ["Perfect Squares", "Square Roots", "Methods of Finding Square Roots"],
+            "Cubes and Cube Roots": ["Perfect Cubes", "Cube Roots", "Properties of Cubes"],
+            "Comparing Quantities": ["Percentage", "Profit and Loss", "Discount", "Compound Interest", "Sales Tax"],
+            "Algebraic Expressions": ["Algebraic Terms", "Addition and Subtraction", "Multiplication", "Identities"],
+            "Mensuration": ["Area of Trapezium", "Area of Polygons", "Surface Area", "Volume of Cubes and Cuboids"],
+            "Exponents and Powers": ["Laws of Exponents", "Negative Exponents", "Standard Form"],
+            "Direct and Inverse Proportions": ["Direct Proportion", "Inverse Proportion", "Applications"],
+            "Factorisation": ["Common Factors", "Factorisation by Grouping", "Algebraic Identities"],
+            "Introduction to Graphs": ["Coordinate Plane", "Plotting Points", "Linear Graphs"]
+        },
+        Science: {
+            "Crop Production and Management": ["Agricultural Practices", "Preparation of Soil", "Irrigation", "Harvesting", "Storage"],
+            "Microorganisms": ["Types of Microorganisms", "Useful Microorganisms", "Harmful Microorganisms", "Food Preservation"],
+            "Synthetic Fibres and Plastics": ["Types of Synthetic Fibres", "Properties of Plastics", "Environmental Impact"],
+            "Materials: Metals and Non-metals": ["Physical Properties", "Chemical Properties", "Uses of Metals and Non-metals"],
+            "Coal and Petroleum": ["Fossil Fuels", "Formation of Coal", "Petroleum Refining", "Conservation of Resources"],
+            "Combustion and Flame": ["Conditions for Combustion", "Types of Combustion", "Flame Structure", "Fuel Efficiency"],
+            "Conservation of Plants and Animals": ["Deforestation", "Wildlife Sanctuaries", "National Parks", "Biodiversity"],
+            "Cell Structure and Functions": ["Cell", "Cell Membrane", "Nucleus", "Plant and Animal Cells"],
+            "Reproduction in Animals": ["Sexual Reproduction", "Fertilisation", "Development of Embryo", "Asexual Reproduction"],
+            "Reaching the Age of Adolescence": ["Adolescence", "Hormones", "Puberty", "Health and Hygiene"],
+            "Force and Pressure": ["Contact Forces", "Non-contact Forces", "Pressure", "Atmospheric Pressure"],
+            "Friction": ["Causes of Friction", "Factors Affecting Friction", "Advantages and Disadvantages", "Reducing Friction"],
+            "Sound": ["Production of Sound", "Vibrations", "Frequency", "Amplitude", "Human Ear"],
+            "Chemical Effects of Electric Current": ["Conductors and Insulators", "Chemical Effects", "Electroplating"],
+            "Some Natural Phenomena": ["Lightning", "Electric Charges", "Earthquakes", "Safety Measures"],
+            "Light": ["Reflection of Light", "Laws of Reflection", "Multiple Reflection", "Human Eye"],
+            "Stars and the Solar System": ["Stars", "Constellations", "Solar System", "Phases of the Moon"],
+            "Pollution of Air and Water": ["Air Pollution", "Water Pollution", "Greenhouse Effect", "Pollution Prevention"]
+        }
+    },
+    9: {
+        Mathematics: {
+            "Number Systems": ["Natural and Whole Numbers", "Rational Numbers", "Irrational Numbers", "Real Numbers", "Decimal Expansions", "Laws of Exponents"],
+            "Polynomials": ["Introduction to Polynomials", "Degree of a Polynomial", "Zeros of a Polynomial", "Remainder Theorem", "Factorisation"],
+            "Coordinate Geometry": ["Cartesian Plane", "Coordinates of a Point", "Quadrants", "Plotting Points"],
+            "Linear Equations in Two Variables": ["Linear Equations", "Solutions of Equations", "Graphical Representation"],
+            "Introduction to Euclid Geometry": ["Definitions", "Axioms", "Postulates", "Euclid's Geometry"],
+            "Lines and Angles": ["Intersecting Lines", "Parallel Lines", "Angle Relationships", "Transversal"],
+            "Triangles": ["Congruence", "Triangle Inequalities", "Properties of Triangles"],
+            "Quadrilaterals": ["Types of Quadrilaterals", "Angle Sum Property", "Parallelogram Properties"],
+            "Circles": ["Chord", "Arc", "Angle Subtended", "Properties of Circles"],
+            "Heron's Formula": ["Semi-perimeter", "Heron's Formula", "Area of Triangle"],
+            "Surface Areas and Volumes": ["Surface Area of Cubes", "Cuboids", "Cylinders", "Cones", "Spheres", "Volumes"],
+            "Statistics": ["Collection of Data", "Frequency Distribution", "Mean", "Median", "Mode", "Graphs"]
+        },
+        Science: {
+            "Matter in Our Surroundings": ["States of Matter", "Particle Nature of Matter", "Change of State", "Evaporation"],
+            "Is Matter Around Us Pure": ["Mixtures", "Solutions", "Suspensions", "Colloids", "Separation Techniques"],
+            "Atoms and Molecules": ["Laws of Chemical Combination", "Atomic Mass", "Molecular Mass", "Mole Concept", "Chemical Formulae"],
+            "Structure of the Atom": ["Subatomic Particles", "Thomson Model", "Rutherford Model", "Bohr Model", "Electronic Configuration"],
+            "The Fundamental Unit of Life": ["Cell", "Cell Organelles", "Nucleus", "Plant and Animal Cells"],
+            "Tissues": ["Plant Tissues", "Animal Tissues", "Meristematic Tissue", "Permanent Tissue"],
+            "Motion": ["Distance and Displacement", "Speed and Velocity", "Acceleration", "Equations of Motion", "Graphs of Motion"],
+            "Force and Laws of Motion": ["Newton's First Law", "Newton's Second Law", "Newton's Third Law", "Momentum", "Conservation of Momentum"],
+            "Gravitation": ["Universal Law of Gravitation", "Free Fall", "Mass and Weight", "Thrust and Pressure", "Buoyancy"],
+            "Work and Energy": ["Work", "Kinetic Energy", "Potential Energy", "Law of Conservation of Energy", "Power"],
+            "Sound": ["Production of Sound", "Propagation of Sound", "Frequency and Amplitude", "Echo", "Human Ear"],
+            "Improvement in Food Resources": ["Crop Variety Improvement", "Crop Production", "Animal Husbandry", "Food Security"]
+        }
+    },
+    10: {
+        Mathematics: {
+            "Real Numbers": ["Euclid's Division Lemma", "Fundamental Theorem of Arithmetic", "HCF and LCM", "Irrational Numbers"],
+            "Polynomials": ["Geometrical Meaning of Zeros", "Relationship Between Zeros and Coefficients", "Division Algorithm"],
+            "Pair of Linear Equations in Two Variables": ["Graphical Method", "Substitution Method", "Elimination Method", "Cross Multiplication Method", "Word Problems"],
+            "Quadratic Equations": ["Standard Form", "Factorisation Method", "Completing the Square", "Quadratic Formula", "Nature of Roots"],
+            "Arithmetic Progressions": ["Introduction to AP", "Common Difference", "nth Term", "Sum of First n Terms"],
+            "Triangles": ["Similar Figures", "Similarity of Triangles", "Basic Proportionality Theorem", "Pythagoras Theorem"],
+            "Coordinate Geometry": ["Distance Formula", "Section Formula", "Area of Triangle"],
+            "Introduction to Trigonometry": ["Trigonometric Ratios", "Trigonometric Identities", "Complementary Angles"],
+            "Applications of Trigonometry": ["Line of Sight", "Angle of Elevation", "Angle of Depression"],
+            "Circles": ["Tangent to a Circle", "Number of Tangents", "Properties of Tangents"],
+            "Areas Related to Circles": ["Circumference", "Area of Circle", "Sector", "Segment"],
+            "Surface Areas and Volumes": ["Combination of Solids", "Conversion of Solids", "Volume", "Surface Area"],
+            "Statistics": ["Mean", "Median", "Mode", "Cumulative Frequency"],
+            "Probability": ["Classical Probability", "Experimental Probability", "Simple Events"]
+        },
+        Science: {
+            "Chemical Reactions and Equations": ["Chemical Equations", "Balancing Equations", "Types of Reactions", "Oxidation and Reduction"],
+            "Acids Bases and Salts": ["Properties of Acids", "Properties of Bases", "pH Scale", "Neutralisation", "Important Salts"],
+            "Metals and Non-metals": ["Physical Properties", "Chemical Properties", "Reactivity Series", "Ionic Compounds", "Corrosion"],
+            "Carbon and Its Compounds": ["Covalent Bonding", "Properties of Carbon", "Hydrocarbons", "Functional Groups", "Ethanol and Ethanoic Acid"],
+            "Life Processes": ["Nutrition", "Respiration", "Transportation", "Excretion"],
+            "Control and Coordination": ["Nervous System", "Human Brain", "Reflex Action", "Hormones", "Plant Hormones"],
+            "How Do Organisms Reproduce": ["Asexual Reproduction", "Sexual Reproduction", "Reproductive Systems", "Reproductive Health"],
+            "Heredity and Evolution": ["Inheritance", "Mendel's Experiments", "Dominant and Recessive Traits", "Sex Determination"],
+            "Light Reflection and Refraction": ["Reflection", "Spherical Mirrors", "Refraction", "Lenses", "Lens Formula"],
+            "Human Eye and Colourful World": ["Structure of Eye", "Defects of Vision", "Dispersion", "Atmospheric Refraction"],
+            "Electricity": ["Electric Current", "Potential Difference", "Ohm's Law", "Resistance", "Series and Parallel Circuits", "Electric Power"],
+            "Magnetic Effects of Electric Current": ["Magnetic Field", "Magnetic Field Lines", "Electromagnet", "Electric Motor", "Electric Generator"],
+            "Our Environment": ["Ecosystem", "Food Chains", "Food Webs", "Biodegradable Materials", "Environmental Balance"]
+        }
+    }
+};
+
+const TOPIC_KNOWLEDGE = [
+    {
+        keys: ["properties of acids", "acid", "acids", "अम्ल", "अम्ल के गुण", "অ্যাসিড", "অম্ল"],
+        en: {
+            title: "Properties of Acids",
+            explanation: "Acids are chemical substances that taste sour, turn blue litmus paper red, and release hydrogen ions (H⁺) when dissolved in water. Their pH value is always less than 7.",
+            notes: [
+                "Taste: Sour in taste and corrosive when concentrated.",
+                "Litmus test: Turns blue litmus red and methyl orange pink/red.",
+                "Metal reaction: Acid + Active Metal → Salt + Hydrogen gas (Zn + 2HCl → ZnCl₂ + H₂).",
+                "Neutralisation: Acid + Base → Salt + Water.",
+                "Electrical conductivity: Aqueous acid solutions conduct electricity due to free H⁺ ions."
+            ],
+            examples: [
+                "Lemon juice contains citric acid and vinegar contains acetic acid, which give them a sour taste.",
+                "Hydrochloric acid (HCl) in our stomach helps digest proteins and kills harmful germs.",
+                "When dilute HCl is poured on zinc granules, hydrogen gas bubbles evolve with a pop sound."
+            ],
+            formula: "Acid + Base → Salt + Water  |  pH < 7"
+        },
+        hi: {
+            title: "अम्ल के गुण (Properties of Acids)",
+            explanation: "अम्ल (Acids) वे रासायनिक पदार्थ हैं जो स्वाद में खट्टे होते हैं, नीले लिटमस पेपर को लाल कर देते हैं, और जल में घुलने पर हाइड्रोजन आयन (H⁺) प्रदान करते हैं। अम्ल का pH मान 7 से कम होता है।",
+            notes: [
+                "स्वाद और प्रकृति: अम्ल स्वाद में खट्टे होते हैं और सांद्र रूप में संक्षारक (corrosive) होते हैं।",
+                "लिटमस परीक्षण: यह नीले लिटमस को लाल कर देता है।",
+                "धातु से अभिक्रिया: अम्ल + धातु → लवण + हाइड्रोजन गैस (Zn + 2HCl → ZnCl₂ + H₂)।",
+                "उदासीनीकरण: अम्ल + क्षारक → लवण + जल।",
+                "विद्युत चालकता: अम्ल का जलीय विलयन मुक्त आयनों के कारण विद्युत का सुचालक होता है।"
+            ],
+            examples: [
+                "नींबू के रस में साइट्रिक अम्ल और सिरके में एसिटिक अम्ल पाया जाता है, जिससे ये खट्टे होते हैं।",
+                "हमारे आमाशय (पेट) में हाइड्रोक्लोरिक अम्ल (HCl) भोजन को पचाने में मदद करता है।",
+                "जिंक के टुकड़ों पर तनु HCl डालने से हाइड्रोजन गैस के बुलबुले निकलते हैं।"
+            ],
+            formula: "अम्ल + क्षारक → लवण + जल  |  pH < 7"
+        },
+        bn: {
+            title: "অ্যাসিডের ধর্ম (Properties of Acids)",
+            explanation: "অ্যাসিড বা অম্ল হলো এমন রাসায়নিক পদার্থ যা স্বাদে টক, নীল লিটমাস কাগজকে লাল করে এবং জলীয় দ্রবণে হাইড্রোজেন আয়ন (H⁺) উৎপন্ন করে। এর pH মান ৭-এর কম হয়।",
+            notes: [
+                "স্বাদ: অ্যাসিড স্বাদে টক এবং গাঢ় অবস্থায় ক্ষয়কারক।",
+                "লিটমাস পরীক্ষা: নীল লিটমাসকে লাল করে।",
+                "ধাতুর সাথে বিক্রিয়া: অ্যাসিড + ধাতু → লবণ + হাইড্রোজেন গ্যাস (Zn + 2HCl → ZnCl₂ + H₂)।",
+                "প্রশমন বিক্রিয়া: অ্যাসিড + ক্ষার → লবণ + জল।"
+            ],
+            examples: [
+                "লেবুর রসে সাইট্রিক অ্যাসিড এবং ভিনেগারে অ্যাসিটিক অ্যাসিড থাকে।",
+                "আমাদের পাকস্থলীতে হাইড্রোক্লোরিক অ্যাসিড (HCl) খাদ্য হজমে সাহায্য করে।"
+            ],
+            formula: "অ্যাসিড + ক্ষার → লবণ + জল  |  pH < 7"
+        }
+    },
+    {
+        keys: ["properties of bases", "base", "bases", "alkali", "क्षार", "क्षारक", "ক্ষার", "ক্ষারক"],
+        en: {
+            title: "Properties of Bases",
+            explanation: "Bases are substances that taste bitter, feel soapy to touch, turn red litmus paper blue, and release hydroxide ions (OH⁻) in aqueous solution. Their pH value is greater than 7.",
+            notes: [
+                "Water-soluble bases are called alkalis (e.g., NaOH, KOH).",
+                "Turns red litmus blue and phenolphthalein indicator pink.",
+                "Reacts with acids to form salt and water (Neutralisation)."
+            ],
+            examples: [
+                "Baking soda and soap solutions feel slippery because they are basic.",
+                "Milk of Magnesia Mg(OH)₂ is used as an antacid to neutralise stomach acidity."
+            ],
+            formula: "NaOH (aq) → Na⁺ + OH⁻  |  pH > 7"
+        },
+        hi: {
+            title: "क्षारक के गुण (Properties of Bases)",
+            explanation: "क्षारक (Bases) वे रासायनिक पदार्थ हैं जो स्वाद में कड़वे होते हैं, छूने पर साबुन जैसे चिकने लगते हैं, लाल लिटमस को नीला कर देते हैं और जल में हाइड्रॉक्साइड आयन (OH⁻) देते हैं। इनका pH मान 7 से अधिक होता है।",
+            notes: [
+                "जल में घुलनशील क्षारकों को क्षार (Alkali) कहते हैं, जैसे NaOH, KOH।",
+                "यह लाल लिटमस को नीला और फिनॉल्फथेलिन को गुलाबी कर देता है।",
+                "अम्ल से अभिक्रिया करके लवण और जल बनाता है।"
+            ],
+            examples: [
+                "खाने का सोडा (बेकिंग सोडा) और साबुन का घोल क्षारीय प्रकृति के होते हैं।",
+                "पेट की एसिडिटी दूर करने के लिए मिल्क ऑफ मैग्नीशिया Mg(OH)₂ का उपयोग किया जाता है।"
+            ],
+            formula: "NaOH (aq) → Na⁺ + OH⁻  |  pH > 7"
+        },
+        bn: {
+            title: "ক্ষারকের ধর্ম (Properties of Bases)",
+            explanation: "ক্ষারক হলো এমন পদার্থ যা স্বাদে তিক্ত, সাবানের মতো পিচ্ছিল, লাল লিটমাসকে নীল করে এবং জলে হাইড্রক্সাইড আয়ন (OH⁻) দেয়। এর pH মান ৭-এর বেশি।",
+            notes: [
+                "জলে দ্রবণীয় ক্ষারককে ক্ষার (Alkali) বলে, যেমন NaOH, KOH।",
+                "লাল লিটমাসকে নীল করে এবং অ্যাসিডকে প্রশমিত করে লবণ ও জল তৈরি করে।"
+            ],
+            examples: [
+                "বেকিং সোডা এবং সাবান জল ক্ষারীয় প্রকৃতির।",
+                "অ্যাসিডিটি কমাতে মিল্ক অফ ম্যাগনেসিয়া ব্যবহার করা হয়।"
+            ],
+            formula: "NaOH (aq) → Na⁺ + OH⁻  |  pH > 7"
+        }
+    },
+    {
+        keys: ["photosynthesis", "प्रकाश संश्लेषण", "সালোকসংশ্লেষ"],
+        en: {
+            title: "Photosynthesis",
+            explanation: "Photosynthesis is the biological process by which green plants use sunlight, carbon dioxide, and water in the presence of chlorophyll to make glucose (food) and release oxygen.",
+            notes: [
+                "Occurs in chloroplasts containing green chlorophyll pigment.",
+                "CO₂ enters leaves through stomata; water is absorbed by roots.",
+                "Converts solar energy into chemical energy stored in glucose."
+            ],
+            examples: [
+                "A green plant kept in sunlight produces starch in its leaves and releases oxygen.",
+                "Forests absorb carbon dioxide and supply oxygen for all living beings."
+            ],
+            formula: "6CO₂ + 6H₂O + Sunlight → C₆H₁₂O₆ + 6O₂"
+        },
+        hi: {
+            title: "प्रकाश संश्लेषण (Photosynthesis)",
+            explanation: "प्रकाश संश्लेषण वह जैविक प्रक्रिया है जिसमें हरे पौधे क्लोरोफिल और सूर्य के प्रकाश की उपस्थिति में कार्बन डाइऑक्साइड (CO₂) तथा जल (H₂O) से ग्लूकोज (भोजन) बनाते हैं और ऑक्सीजन गैस बाहर छोड़ते हैं।",
+            notes: [
+                "यह प्रक्रिया पत्तियों के क्लोरोप्लास्ट में मौजूद क्लोरोफिल की मदद से होती है।",
+                "पत्तियों के रंध्रों (Stomata) से CO₂ अंदर जाती है और ऑक्सीजन बाहर निकलती है।",
+                "इसमें सौर ऊर्जा रासायनिक ऊर्जा (ग्लूकोज) में परिवर्तित होती है।"
+            ],
+            examples: [
+                "धूप में रखा हरा पौधा अपनी पत्तियों में मंड (Starch) बनाता है और ऑक्सीजन छोड़ता है।",
+                "जंगल प्रकाश संश्लेषण द्वारा वातावरण की CO₂ सोखकर हमें शुद्ध ऑक्सीजन देते हैं।"
+            ],
+            formula: "6CO₂ + 6H₂O + सूर्य का प्रकाश → C₆H₁₂O₆ + 6O₂"
+        },
+        bn: {
+            title: "সালোকসংশ্লেষ (Photosynthesis)",
+            explanation: "সালোকসংশ্লেষ হলো সেই প্রক্রিয়া যার মাধ্যমে সবুজ উদ্ভিদ ক্লোরোফিল ও সূর্যালোকের উপস্থিতিতে কার্বন ডাইঅক্সাইড ও জল থেকে গ্লুকোজ তৈরি করে এবং অক্সিজেন নির্গত করে।",
+            notes: [
+                "পাতার ক্লোরোপ্লাস্টে থাকা ক্লোরোফিল সূর্যালোক শোষণ করে।",
+                "পত্ররন্ধ্র (Stomata) দিয়ে CO₂ প্রবেশ করে এবং O₂ বের হয়।"
+            ],
+            examples: [
+                "সূর্যালোকে রাখা সবুজ গাছের পাতায় শ্বেতসার তৈরি হয় এবং অক্সিজেন নির্গত হয়।"
+            ],
+            formula: "6CO₂ + 6H₂O + সূর্যালোক → C₆H₁₂O₆ + 6O₂"
+        }
+    },
+    {
+        keys: ["ohm's law", "ohms law", "ohm", "ओम का नियम", "ওহমের সূত্র"],
+        en: {
+            title: "Ohm's Law",
+            explanation: "Ohm's Law states that at constant temperature, the electric current (I) flowing through a metallic conductor is directly proportional to the potential difference (V) across its ends.",
+            notes: [
+                "V = I × R, where R is electrical resistance measured in Ohms (Ω).",
+                "Electric current (I) is measured in Amperes (A) and voltage (V) in Volts (V).",
+                "The V–I graph for an ohmic conductor is a straight line passing through the origin."
+            ],
+            examples: [
+                "If a 12 V battery is connected to a 4 Ω resistor, current I = V / R = 12 / 4 = 3 A.",
+                "Doubling the voltage across a fixed resistor doubles the electric current."
+            ],
+            formula: "V = I × R  |  I = V / R  |  R = V / I"
+        },
+        hi: {
+            title: "ओम का नियम (Ohm's Law)",
+            explanation: "ओम का नियम: यदि ताप और अन्य भौतिक अवस्थाएँ स्थिर रहें, तो किसी चालक के सिरों के बीच का विभवांतर (V) उसमें प्रवाहित होने वाली विद्युत धारा (I) के समानुपाती होता है।",
+            notes: [
+                "V = I × R, जहाँ R चालक का प्रतिरोध (Resistance) है जिसका SI मात्रक ओम (Ω) है।",
+                "विद्युत धारा (I) का मात्रक एम्पियर (A) और विभवांतर (V) का मात्रक वोल्ट (V) होता है।",
+                "V और I के बीच का ग्राफ एक सीधी सरल रेखा होता है।"
+            ],
+            examples: [
+                "यदि 12 V की बैटरी को 4 Ω के प्रतिरोधक से जोड़ा जाए, तो धारा I = V / R = 12 / 4 = 3 A होगी।",
+                "किसी परिपथ में वोल्टेज दोगुना करने पर विद्युत धारा भी दोगुनी हो जाती है।"
+            ],
+            formula: "V = I × R  |  I = V / R  |  R = V / I"
+        },
+        bn: {
+            title: "ওহমের সূত্র (Ohm's Law)",
+            explanation: "ওহমের সূত্র: তাপমাত্রা স্থির থাকলে কোনো পরিবাহীর মধ্য দিয়ে প্রবাহিত তড়িৎপ্রবাহ (I) পরিবাহীর দুই প্রান্তের বিভবপ্রভেদের (V) সমানুপাতিক।",
+            notes: [
+                "V = I × R, যেখানে R হলো পরিবাহীর রোধ (একক: ওহম Ω)।",
+                "V বনাম I লেখচিত্র একটি মূলবিন্দুগামী সরলরেখা হয়।"
+            ],
+            examples: [
+                "12 V ব্যাটারি 4 Ω রোধের সাথে যুক্ত করলে তড়িৎপ্রবাহ I = 12 / 4 = 3 A হবে।"
+            ],
+            formula: "V = I × R  |  I = V / R  |  R = V / I"
+        }
+    },
+    {
+        keys: ["electric current", "electricity", "विद्युत धारा", "বিদ্যুৎ", "তড়িৎপ্রবাহ"],
+        en: {
+            title: "Electric Current",
+            explanation: "Electric current is the rate of flow of electric charge through any cross-section of a conductor. Its SI unit is Ampere (A).",
+            notes: [
+                "I = Q / t (1 Ampere = 1 Coulomb / 1 Second).",
+                "Measured by an ammeter connected in series.",
+                "Conventional current flows from positive to negative terminal."
+            ],
+            examples: [
+                "If 20 C of charge flows through a wire in 4 seconds, current I = 20 / 4 = 5 A.",
+                "Switching on a ceiling fan completes the circuit so electric current flows through the motor."
+            ],
+            formula: "I = Q / t"
+        },
+        hi: {
+            title: "विद्युत धारा (Electric Current)",
+            explanation: "किसी चालक के अनुप्रस्थ काट से प्रति इकाई समय में प्रवाहित होने वाले विद्युत आवेश की दर को विद्युत धारा कहते हैं। इसका SI मात्रक एम्पियर (A) है।",
+            notes: [
+                "I = Q / t (1 एम्पियर = 1 कूलॉम आवेश प्रति सेकंड)।",
+                "विद्युत धारा को मापने के लिए अमीटर (Ammeter) को श्रेणीक्रम में जोड़ा जाता है।",
+                "विद्युत धारा की दिशा धन टर्मिनल से ऋण टर्मिनल की ओर मानी जाती है।"
+            ],
+            examples: [
+                "यदि किसी तार से 4 सेकंड में 20 कूलॉम आवेश प्रवाहित होता है, तो धारा I = 20 / 4 = 5 A होगी।",
+                "स्विच ऑन करने पर परिपथ पूरा हो जाता है और पंखे में विद्युत धारा बहने लगती है।"
+            ],
+            formula: "I = Q / t"
+        },
+        bn: {
+            title: "তড়িৎপ্রবাহ (Electric Current)",
+            explanation: "কোনো পরিবাহীর প্রস্থচ্ছেদের মধ্য দিয়ে একক সময়ে যে পরিমাণ তড়িৎ আধান প্রবাহিত হয়, তাকে তড়িৎপ্রবাহ বলে। এর SI একক অ্যাম্পিয়ার (A)।",
+            notes: [
+                "I = Q / t (১ অ্যাম্পিয়ার = ১ কুলম্ব / ১ সেকেন্ড)।",
+                "অ্যামিটার যন্ত্রের সাহায্যে তড়িৎপ্রবাহ মাপা হয়।"
+            ],
+            examples: [
+                "৪ সেকেন্ডে ২০ কুলম্ব আধান প্রবাহিত হলে তড়িৎপ্রবাহ I = ২০ / ৪ = ৫ A হবে।"
+            ],
+            formula: "I = Q / t"
+        }
+    },
+    {
+        keys: ["motion", "distance and displacement", "speed and velocity", "acceleration", "equations of motion", "गति", "चाल", "वेग", "त्वरण", "গতি", "বেগ"],
+        en: {
+            title: "Motion",
+            explanation: "An object is said to be in motion when its position changes continuously with time relative to a reference point. Key quantities include distance, displacement, speed, velocity, and acceleration.",
+            notes: [
+                "Distance is total path length (scalar); displacement is shortest straight-line change in position (vector).",
+                "Speed = Distance / Time (m/s); Velocity = Displacement / Time (m/s).",
+                "Acceleration a = (v − u) / t (m/s²)."
+            ],
+            examples: [
+                "A car travelling 100 km in 2 hours has an average speed of 50 km/h.",
+                "If a runner completes one full round of a 400 m circular track, distance = 400 m but displacement = 0 m."
+            ],
+            formula: "v = u + at  |  s = ut + ½at²  |  v² − u² = 2as"
+        },
+        hi: {
+            title: "गति (Motion)",
+            explanation: "जब किसी वस्तु की स्थिति समय के साथ किसी निर्देश बिंदु के सापेक्ष लगातार बदलती है, तो वह वस्तु गति (Motion) में कहलाती है। दूरी, विस्थापन, चाल, वेग और त्वरण इसके मुख्य अंग हैं।",
+            notes: [
+                "दूरी कुल तय किए गए पथ की लंबाई है (अदिश राशि), जबकि विस्थापन प्रारंभिक और अंतिम बिंदु के बीच की न्यूनतम सीधी दूरी है (सदिश राशि)।",
+                "चाल = दूरी / समय (m/s); वेग = विस्थापन / समय (m/s)।",
+                "त्वरण (Acceleration) a = (v − u) / t, इसका SI मात्रक m/s² है।"
+            ],
+            examples: [
+                "यदि एक कार 2 घंटे में 100 km दूरी तय करती है, तो उसकी औसत चाल 50 km/h होगी।",
+                "400 m के वृत्ताकार ट्रैक का एक पूरा चक्कर लगाने पर दूरी = 400 m होगी, लेकिन विस्थापन = 0 m होगा।"
+            ],
+            formula: "v = u + at  |  s = ut + ½at²  |  v² − u² = 2as"
+        },
+        bn: {
+            title: "গতি (Motion)",
+            explanation: "সময়ের সাথে পারিপার্শ্বিকের সাপেক্ষে কোনো বস্তুর অবস্থানের পরিবর্তন ঘটলে তাকে গতি বলে। দূরত্ব, সরণ, দ্রুতি, বেগ ও ত্বরণ গতির প্রধান রাশি।",
+            notes: [
+                "দূরত্ব স্কেলার রাশি এবং সরণ ভেক্টর রাশি।",
+                "দ্রুতি = দূরত্ব / সময় (m/s); বেগ = সরণ / সময় (m/s)।",
+                "ত্বরণ a = (v − u) / t (m/s²)।"
+            ],
+            examples: [
+                "একটি গাড়ি ২ ঘণ্টায় ১০০ কিমি গেলে গড় দ্রুতি ৫০ কিমি/ঘণ্টা হবে।"
+            ],
+            formula: "v = u + at  |  s = ut + ½at²  |  v² − u² = 2as"
+        }
+    },
+    {
+        keys: ["gravitation", "universal law of gravitation", "gravity", "free fall", "गुरुत्वाकर्षण", "गुरुत्व", "মহাকর্ষ"],
+        en: {
+            title: "Gravitation",
+            explanation: "Gravitation is the universal force of attraction between any two objects having mass. Newton's Universal Law states that this force is directly proportional to the product of their masses and inversely proportional to the square of the distance between them.",
+            notes: [
+                "Universal gravitational constant G = 6.67 × 10⁻¹¹ N·m²/kg².",
+                "Acceleration due to gravity on Earth g ≈ 9.8 m/s².",
+                "Mass remains constant everywhere, whereas weight W = m × g changes with gravity."
+            ],
+            examples: [
+                "An apple detaching from a tree falls straight down toward Earth due to gravity.",
+                "An object weighing 60 N on Earth weighs only 10 N (1/6th) on the Moon."
+            ],
+            formula: "F = G × (M × m) / r²  |  W = m × g"
+        },
+        hi: {
+            title: "गुरुत्वाकर्षण (Gravitation)",
+            explanation: "ब्रह्मांड में द्रव्यमान रखने वाला प्रत्येक कण दूसरे कण को अपनी ओर आकर्षित करता है, इस आकर्षण बल को गुरुत्वाकर्षण कहते हैं। न्यूटन के अनुसार यह बल दोनों पिंडों के द्रव्यमानों के गुणनफल के समानुपाती और उनके बीच की दूरी के वर्ग के व्युत्क्रमानुपाती होता है।",
+            notes: [
+                "सार्वत्रिक गुरुत्वीय स्थिरांक G = 6.67 × 10⁻¹¹ N·m²/kg² होता है।",
+                "पृथ्वी पर गुरुत्वीय त्वरण g का मान लगभग 9.8 m/s² होता है।",
+                "द्रव्यमान (Mass) हर जगह समान रहता है, जबकि भार W = m × g स्थान के अनुसार बदलता है।"
+            ],
+            examples: [
+                "पेड़ से टूटकर सेब का नीचे पृथ्वी की ओर गिरना गुरुत्वाकर्षण बल का उदाहरण है।",
+                "यदि पृथ्वी पर किसी वस्तु का भार 60 N है, तो चंद्रमा पर उसका भार 1/6 यानी केवल 10 N होगा।"
+            ],
+            formula: "F = G × (M × m) / r²  |  W = m × g"
+        },
+        bn: {
+            title: "মহাকর্ষ (Gravitation)",
+            explanation: "মহাবিশ্বের প্রতিটি বস্তুকণা একে অপরকে নিজের দিকে আকর্ষণ করে, এই আকর্ষণ বলকে মহাকর্ষ বলে।",
+            notes: [
+                "মহাকর্ষীয় ধ্রুবক G = 6.67 × 10⁻¹¹ N·m²/kg²।",
+                "পৃথিবীতে অভিকর্ষজ ত্বরণ g ≈ 9.8 m/s²।"
+            ],
+            examples: [
+                "গাছ থেকে ফল মাটিতে পড়া পৃথিবীর অভিকর্ষ বলের উদাহরণ।"
+            ],
+            formula: "F = G × (M × m) / r²  |  W = m × g"
+        }
+    },
+    {
+        keys: ["area of rectangle", "rectangle", "आयत का क्षेत्रफल", "आयत", "আয়তক্ষেত্রের ক্ষেত্রফল"],
+        en: {
+            title: "Area of Rectangle",
+            explanation: "The area of a rectangle is the total flat region enclosed within its four sides, calculated by multiplying its length by its breadth.",
+            notes: [
+                "Opposite sides of a rectangle are equal and parallel.",
+                "All four interior angles measure 90°.",
+                "Area is expressed in square units such as cm² or m²."
+            ],
+            examples: [
+                "A rectangular room 6 m long and 4 m wide has Area = 6 × 4 = 24 m².",
+                "A notebook page of length 20 cm and breadth 15 cm has Area = 20 × 15 = 300 cm²."
+            ],
+            formula: "Area = Length × Breadth (l × b)"
+        },
+        hi: {
+            title: "आयत का क्षेत्रफल (Area of Rectangle)",
+            explanation: "आयत का क्षेत्रफल (Area of Rectangle) उसकी चारों भुजाओं के अंदर घिरे हुए कुल समतल स्थान की माप है, जिसे लंबाई और चौड़ाई का गुणा करके निकाला जाता है।",
+            notes: [
+                "आयत की आमने-सामने की भुजाएँ बराबर और समानांतर होती हैं।",
+                "इसके चारों अंतःकोण समकोण (90°) होते हैं।",
+                "क्षेत्रफल हमेशा वर्ग इकाई (cm², m²) में लिखा जाता है।"
+            ],
+            examples: [
+                "यदि एक आयताकार कमरे की लंबाई 6 m और चौड़ाई 4 m है, तो क्षेत्रफल = 6 × 4 = 24 m² होगा।",
+                "20 cm लंबी और 15 cm चौड़ी कॉपी के पन्ने का क्षेत्रफल = 20 × 15 = 300 cm² है।"
+            ],
+            formula: "आयत का क्षेत्रफल = लंबाई × चौड़ाई (l × b)"
+        },
+        bn: {
+            title: "আয়তক্ষেত্রের ক্ষেত্রফল (Area of Rectangle)",
+            explanation: "আয়তক্ষেত্রের চারটি বাহু দ্বারা আবদ্ধ মোট সমতল অঞ্চলের পরিমাপকে তার ক্ষেত্রফল বলে, যা দৈর্ঘ্য ও প্রস্থ গুণ করে নির্ণয় করা হয়।",
+            notes: [
+                "আয়তক্ষেত্রের বিপরীত বাহুগুলি সমান ও সমান্তরাল।",
+                "ক্ষেত্রফলের একক বর্গ একক (cm², m²)।"
+            ],
+            examples: [
+                "৬ মিটার দৈর্ঘ্য ও ৪ মিটার প্রস্থ বিশিষ্ট ঘরের ক্ষেত্রফল = ৬ × ৪ = ২৪ বর্গমিটার।"
+            ],
+            formula: "ক্ষেত্রফল = দৈর্ঘ্য × প্রস্থ (l × b)"
+        }
+    },
+    {
+        keys: ["quadratic", "quadratic formula", "quadratic equations", "द्विघात", "द्विघात समीकरण", "দ্বিঘাত সমীকরণ"],
+        en: {
+            title: "Quadratic Equations & Formula",
+            explanation: "A quadratic equation has the standard form ax² + bx + c = 0 (where a ≠ 0). Its roots can be found directly using the quadratic formula.",
+            notes: [
+                "Discriminant D = b² − 4ac decides the nature of roots.",
+                "D > 0: two distinct real roots; D = 0: two equal real roots; D < 0: no real roots."
+            ],
+            examples: [
+                "For x² − 5x + 6 = 0 (a=1, b=-5, c=6): D = 25 − 24 = 1, so x = (5 ± 1) / 2 → x = 3 or x = 2."
+            ],
+            formula: "x = [ −b ± √(b² − 4ac) ] / 2a"
+        },
+        hi: {
+            title: "द्विघात समीकरण और सूत्र (Quadratic Equations)",
+            explanation: "द्विघात समीकरण का मानक रूप ax² + bx + c = 0 (जहाँ a ≠ 0) होता है। द्विघात सूत्र की सहायता से इसके सटीक मूल (हल) ज्ञात किए जाते हैं।",
+            notes: [
+                "विविक्तकर (Discriminant) D = b² − 4ac मूलों की प्रकृति बताता है।",
+                "यदि D > 0 तो दो भिन्न वास्तविक मूल; D = 0 तो दो बराबर वास्तविक मूल; D < 0 तो कोई वास्तविक मूल नहीं।"
+            ],
+            examples: [
+                "समीकरण x² − 5x + 6 = 0 में a = 1, b = -5, c = 6 रखने पर D = 1 आता है, जिससे x = 3 और x = 2 हल मिलते हैं।"
+            ],
+            formula: "x = [ −b ± √(b² − 4ac) ] / 2a"
+        },
+        bn: {
+            title: "দ্বিঘাত সমীকরণ ও সূত্র (Quadratic Equations)",
+            explanation: "দ্বিঘাত সমীকরণের সাধারণ রূপ হলো ax² + bx + c = 0 (a ≠ 0)। দ্বিঘাত সূত্রের মাধ্যমে এর বীজ নির্ণয় করা যায়।",
+            notes: [
+                "নিরূপক D = b² − 4ac বীজের প্রকৃতি নির্ধারণ করে।"
+            ],
+            examples: [
+                "x² − 5x + 6 = 0 সমীকরণের বীজ হলো x = 3 এবং x = 2।"
+            ],
+            formula: "x = [ −b ± √(b² − 4ac) ] / 2a"
+        }
+    },
+    {
+        keys: ["pythagoras", "pythagoras theorem", "पाइथागोरस", "পিথাগোরাস"],
+        en: {
+            title: "Pythagoras Theorem",
+            explanation: "In a right-angled triangle, the square of the hypotenuse (side opposite the 90° angle) equals the sum of the squares of the other two sides.",
+            notes: [
+                "Applies strictly to right-angled triangles.",
+                "Common triplets: (3, 4, 5), (5, 12, 13), (8, 15, 17)."
+            ],
+            examples: [
+                "If base = 3 cm and perpendicular = 4 cm, then hypotenuse = √(3² + 4²) = √25 = 5 cm."
+            ],
+            formula: "Hypotenuse² = Base² + Perpendicular² (c² = a² + b²)"
+        },
+        hi: {
+            title: "पाइथागोरस प्रमेय (Pythagoras Theorem)",
+            explanation: "किसी समकोण त्रिभुज में कर्ण (90° के सामने वाली सबसे लंबी भुजा) का वर्ग अन्य दो भुजाओं (आधार और लंब) के वर्गों के योग के बराबर होता है।",
+            notes: [
+                "यह प्रमेय केवल समकोण त्रिभुज पर लागू होता है।",
+                "प्रमुख पाइथागोरस त्रिक: (3, 4, 5), (5, 12, 13), (8, 15, 17)।"
+            ],
+            examples: [
+                "यदि आधार = 3 cm और लंब = 4 cm है, तो कर्ण = √(3² + 4²) = √25 = 5 cm होगा।"
+            ],
+            formula: "कर्ण² = आधार² + लंब² (c² = a² + b²)"
+        },
+        bn: {
+            title: "পিথাগোরাসের উপপাদ্য (Pythagoras Theorem)",
+            explanation: "সমকোণী ত্রিভুজের অতিভুজের বর্গ অপর দুই বাহুর বর্গের সমষ্টির সমান।",
+            notes: [
+                "এটি শুধুমাত্র সমকোণী ত্রিভুজের ক্ষেত্রে প্রযোজ্য।"
+            ],
+            examples: [
+                "ভূমি ৩ সেমি ও লম্ব ৪ সেমি হলে অতিভুজ = √(৩² + ৪²) = ৫ সেমি।"
+            ],
+            formula: "অতিভুজ² = ভূমি² + লম্ব² (c² = a² + b²)"
+        }
+    }
+];
+
+function getDefaultData() {
+    return {
+        completedLessons: [],
+        learningMinutes: 0,
+        notes: [],
+        theme: "dark"
+    };
+}
+
+function loadData() {
+    try {
+        const saved = localStorage.getItem(CONFIG.STORAGE_KEY);
+        if (!saved) return getDefaultData();
+        return { ...getDefaultData(), ...JSON.parse(saved) };
+    } catch (e) {
+        return getDefaultData();
+    }
+}
+
+let appData = loadData();
+
+function saveData() {
+    try {
+        localStorage.setItem(CONFIG.STORAGE_KEY, JSON.stringify(appData));
+    } catch (e) {}
+}
+
+function getSelectedClass() { return classSelect.value; }
+function getSelectedSubject() { return subjectSelect.value; }
+
+function loadChapters() {
+    const selectedClass = getSelectedClass();
+    const selectedSubject = getSelectedSubject();
+    chapterSelect.innerHTML = "";
+    topicSelect.innerHTML = "";
+    topicSelect.disabled = true;
+
+    if (!selectedClass || !selectedSubject) {
+        chapterSelect.disabled = true;
+        chapterSelect.innerHTML = `<option value="">First select class and subject</option>`;
+        topicSelect.innerHTML = `<option value="">First select a chapter</option>`;
+        return;
+    }
+
+    const chapters = SYLLABUS[selectedClass]?.[selectedSubject];
+    if (!chapters) return;
+
+    chapterSelect.disabled = false;
+    chapterSelect.innerHTML = `<option value="">Choose Chapter</option>`;
+    Object.keys(chapters).forEach(chapter => {
+        const option = document.createElement("option");
+        option.value = chapter;
+        option.textContent = chapter;
+        chapterSelect.appendChild(option);
+    });
+}
+
+function loadTopics() {
+    const selectedClass = getSelectedClass();
+    const selectedSubject = getSelectedSubject();
+    const selectedChapter = chapterSelect.value;
+    topicSelect.innerHTML = "";
+
+    if (!selectedChapter) {
+        topicSelect.disabled = true;
+        topicSelect.innerHTML = `<option value="">First select a chapter</option>`;
+        return;
+    }
+
+    const topics = SYLLABUS[selectedClass]?.[selectedSubject]?.[selectedChapter];
+    if (!topics) return;
+
+    topicSelect.disabled = false;
+    topicSelect.innerHTML = `<option value="">Choose Topic</option>`;
+    topics.forEach(topic => {
+        const option = document.createElement("option");
+        option.value = topic;
+        option.textContent = topic;
+        topicSelect.appendChild(option);
+    });
+}
+
+classSelect?.addEventListener("change", loadChapters);
+subjectSelect?.addEventListener("change", loadChapters);
+chapterSelect?.addEventListener("change", loadTopics);
+
+function getLanguage() {
+    const code = languageSelect?.value || CONFIG.DEFAULT_LANGUAGE;
+    if (code.startsWith("hi")) return "hi";
+    if (code.startsWith("bn")) return "bn";
+    return "en";
+}
+
+function getLanguageName() {
+    const names = { "hi-IN": "Hindi (हिंदी)", "en-IN": "English", "bn-IN": "Bengali (বাংলা)" };
+    return names[languageSelect?.value] || "Hindi (हिंदी)";
+}
+
+function updateLanguageUI() {
+    const lang = getLanguage();
+    if (activeLanguage) activeLanguage.textContent = getLanguageName();
+
+    const welcomeText = $("welcomeChatText");
+    const doubtSub = $("doubtSubtitle");
+    const qInput = $("studentQuestion");
+    const welcomeBtn = $("welcomeSpeakBtn");
+    const expSub = $("explanationSubLabel");
+    const expHead = $("explanationHeadLabel");
+    const tabNotes = $("tabNotesLabel");
+    const tabEx = $("tabExamplesLabel");
+    const notesHead = $("notesHeadingLabel");
+    const exHead = $("examplesHeadingLabel");
+
+    if (lang === "hi") {
+        if (welcomeText) welcomeText.textContent = "नमस्ते! मैं आपका AI टीचर हूँ। गणित या विज्ञान का कोई भी टॉपिक या प्रश्न पूछें — मैं आपकी चुनी हुई भाषा (हिंदी) में लिखकर और बोलकर समझाऊँगा।";
+        if (doubtSub) doubtSub.textContent = "अपना कोई भी सवाल या टॉपिक पूछें — AI टीचर हिंदी में लिखकर और बोलकर समझाएगा।";
+        if (qInput) qInput.placeholder = "यहाँ हिंदी या अंग्रेजी में अपना सवाल लिखें...";
+        if (welcomeBtn) welcomeBtn.textContent = "🔊 सुनें";
+        if (expSub) expSub.textContent = "पाठ की व्याख्या (EXPLANATION)";
+        if (expHead) expHead.textContent = "आज का पाठ";
+        if (tabNotes) tabNotes.textContent = "नोट्स (Notes)";
+        if (tabEx) tabEx.textContent = "उदाहरण (Examples)";
+        if (notesHead) notesHead.textContent = "स्मार्ट नोट्स (Smart Notes)";
+        if (exHead) exHead.textContent = "व्यावहारिक उदाहरण (Examples)";
+    } else if (lang === "bn") {
+        if (welcomeText) welcomeText.textContent = "নমস্কার! আমি তোমার AI শিক্ষক। গণিত বা বিজ্ঞানের যেকোনো বিষয় বা প্রশ্ন জিজ্ঞাসা করো — আমি বাংলায় লিখে ও বলে বুঝিয়ে দেব।";
+        if (doubtSub) doubtSub.textContent = "যেকোনো প্রশ্ন জিজ্ঞাসা করো — AI শিক্ষক বাংলায় লিখে ও বলে উত্তর দেবে।";
+        if (qInput) qInput.placeholder = "এখানে বাংলা বা ইংরেজিতে প্রশ্ন লেখো...";
+        if (welcomeBtn) welcomeBtn.textContent = "🔊 শুনুন";
+        if (expSub) expSub.textContent = "পাঠের ব্যাখ্যা (EXPLANATION)";
+        if (expHead) expHead.textContent = "আজকের পাঠ";
+        if (tabNotes) tabNotes.textContent = "নোটস (Notes)";
+        if (tabEx) tabEx.textContent = "উদাহরণ (Examples)";
+        if (notesHead) notesHead.textContent = "স্মার্ট নোটস (Smart Notes)";
+        if (exHead) exHead.textContent = "বাস্তব উদাহরণ (Examples)";
+    } else {
+        if (welcomeText) welcomeText.textContent = "Hello! I am your AI teacher. Ask me any topic or question in Mathematics or Science — I will explain and speak it in English.";
+        if (doubtSub) doubtSub.textContent = "Ask any Mathematics or Science topic or question below.";
+        if (qInput) qInput.placeholder = "Ask any topic or question here...";
+        if (welcomeBtn) welcomeBtn.textContent = "🔊 Listen";
+        if (expSub) expSub.textContent = "LESSON EXPLANATION";
+        if (expHead) expHead.textContent = "Today's Learning";
+        if (tabNotes) tabNotes.textContent = "Notes";
+        if (tabEx) tabEx.textContent = "Examples";
+        if (notesHead) notesHead.textContent = "Smart Notes";
+        if (exHead) exHead.textContent = "Practical Examples";
+    }
+}
+
+languageSelect?.addEventListener("change", () => {
+    stopSpeech();
+    updateLanguageUI();
+    if (currentLesson && getSelectedClass() && getSelectedSubject() && chapterSelect.value && topicSelect.value) {
+        startTeaching();
+    }
+});
+
+function escapeHTML(value) {
+    return String(value).replace(/[&<>"']/g, char => ({
+        "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#039;"
+    })[char]);
+}
+
+function findTopicEntry(queryText, chapterText = "") {
+    const q = String(queryText || "").trim().toLowerCase();
+    const ch = String(chapterText || "").trim().toLowerCase();
+    if (!q && !ch) return null;
+
+    for (let i = 0; i < TOPIC_KNOWLEDGE.length; i++) {
+        const item = TOPIC_KNOWLEDGE[i];
+        for (let j = 0; j < item.keys.length; j++) {
+            const k = item.keys[j];
+            if (q === k || (q.length >= 3 && (q.includes(k) || k.includes(q)))) {
+                return item;
+            }
+        }
+    }
+    if (ch) {
+        for (let i = 0; i < TOPIC_KNOWLEDGE.length; i++) {
+            const item = TOPIC_KNOWLEDGE[i];
+            for (let j = 0; j < item.keys.length; j++) {
+                const k = item.keys[j];
+                if (ch === k || ch.includes(k) || k.includes(ch)) {
+                    return item;
+                }
+            }
+        }
+    }
+    return null;
+}
+
+function findSyllabusContext(queryText) {
+    const q = String(queryText || "").trim().toLowerCase();
+    if (q.length < 3) return null;
+    const classes = Object.keys(SYLLABUS);
+    for (let c = 0; c < classes.length; c++) {
+        const cls = classes[c];
+        const subjects = Object.keys(SYLLABUS[cls]);
+        for (let s = 0; s < subjects.length; s++) {
+            const subj = subjects[s];
+            const chapters = Object.keys(SYLLABUS[cls][subj]);
+            for (let ch = 0; ch < chapters.length; ch++) {
+                const chap = chapters[ch];
+                const topics = SYLLABUS[cls][subj][chap];
+                for (let t = 0; t < topics.length; t++) {
+                    const top = topics[t];
+                    if (top.toLowerCase().includes(q) || q.includes(top.toLowerCase())) {
+                        return { class: cls, subject: subj, chapter: chap, topic: top };
+                    }
+                }
+            }
+        }
+    }
+    return null;
+}
+
+function isSimpleEnglishMatch(query, title) {
+    const stop = ["of", "the", "a", "an", "in", "on", "and", "for", "to", "is", "what", "explain", "define"];
+    const cleanWords = (str) => String(str || "").toLowerCase().replace(/[^a-z0-9\s]/g, "").split(" ").filter(w => w && !stop.includes(w));
+    const qW = cleanWords(query);
+    const tW = cleanWords(title);
+    if (!qW.length || !tW.length) return false;
+    return qW.every(w => tW.includes(w)) || tW.every(w => qW.includes(w));
+}
+
+async function fetchEnglishWikiSafe(query) {
+    if (!/^[a-zA-Z0-9\s\-']+$/.test(query)) return null;
+    const ctrl = new AbortController();
+    const timer = setTimeout(() => ctrl.abort(), 2500);
+    try {
+        const searchUrl = "https://en.wikipedia.org/w/api.php?action=query&list=search&srsearch=" + encodeURIComponent(query) + "&format=json&origin=*";
+        const res = await fetch(searchUrl, { signal: ctrl.signal });
+        if (!res.ok) return null;
+        const data = await res.json();
+        const hits = (data && data.query && data.query.search) || [];
+        const match = hits.slice(0, 4).find(h => isSimpleEnglishMatch(query, h.title));
+        if (!match) return null;
+
+        const sumUrl = "https://en.wikipedia.org/api/rest_v1/page/summary/" + encodeURIComponent(match.title.replace(/ /g, "_"));
+        const sRes = await fetch(sumUrl, { signal: ctrl.signal });
+        if (!sRes.ok) return null;
+        const sData = await sRes.json();
+        if (sData && sData.extract && sData.type !== "disambiguation") {
+            const parts = String(sData.extract).slice(0, 700).split(". ").filter(Boolean);
+            return {
+                title: sData.title || match.title,
+                summary: parts.slice(0, 3).join(". ") + "."
+            };
+        }
+    } catch (e) {
+        return null;
+    } finally {
+        clearTimeout(timer);
+    }
+    return null;
+}
+
+async function buildLessonPackage(selectedClass, selectedSubject, selectedChapter, selectedTopic) {
+    const lang = getLanguage();
+    const entry = findTopicEntry(selectedTopic, selectedChapter);
+    const subjName = lang === "hi"
+        ? (selectedSubject === "Mathematics" ? "गणित" : "विज्ञान")
+        : (lang === "bn"
+            ? (selectedSubject === "Mathematics" ? "গণিত" : "বিজ্ঞান")
+            : selectedSubject);
+
+    let titleText = selectedTopic;
+    let explanationText = "";
+    let notesList = [];
+    let examplesList = [];
+    let formulaText = "";
+
+    if (entry) {
+        const localized = entry[lang] || entry.en;
+        titleText = localized.title || selectedTopic;
+        explanationText = localized.explanation;
+        notesList = localized.notes || [];
+        examplesList = localized.examples || [];
+        formulaText = localized.formula || "";
+    } else {
+        const wiki = await fetchEnglishWikiSafe(selectedTopic);
+        if (lang === "hi") {
+            explanationText = `"${selectedTopic}" कक्षा ${selectedClass} ${subjName} के अध्याय "${selectedChapter}" का एक महत्वपूर्ण विषय है। यह विषय इस अध्याय के मूल सिद्धांतों, परिभाषा और दैनिक जीवन में होने वाले अनुप्रयोगों को समझाने में मदद करता है।`;
+            notesList = [
+                `${selectedTopic} की मुख्य परिभाषा और बुनियादी नियमों को ध्यानपूर्वक समझें।`,
+                `अध्याय "${selectedChapter}" के प्रमुख सिद्धांतों के साथ ${selectedTopic} का संबंध जोड़कर पढ़ें।`,
+                `कक्षा ${selectedClass} की पाठ्यपुस्तक के महत्वपूर्ण सूत्रों और चरणबद्ध हल का अभ्यास करें।`
+            ];
+            examplesList = [
+                `दैनिक जीवन और कक्षा ${selectedClass} के प्रयोगों में "${selectedTopic}" का सीधा उपयोग देखा जाता है।`,
+                `अध्याय "${selectedChapter}" के अभ्यास प्रश्नों को हल करते समय ${selectedTopic} के मुख्य नियम लागू होते हैं।`
+            ];
+        } else if (lang === "bn") {
+            explanationText = `"${selectedTopic}" হলো ক্লাস ${selectedClass}-এর ${subjName} বিষয়ের "${selectedChapter}" অধ্যায়ের একটি গুরুত্বপূর্ণ বিষয়। এই বিষয়টি অধ্যায়ের মূল ধারণা ও বাস্তব প্রয়োগ বুঝতে সাহায্য করে।`;
+            notesList = [
+                `${selectedTopic}-এর মূল সংজ্ঞা ও নিয়ম ভালোভাবে বোঝো।`,
+                `"${selectedChapter}" অধ্যায়ের মূল সূত্র ও ধারণার সাথে এটি যুক্ত করে অনুশীলন করো।`,
+                `ক্লাস ${selectedClass}-এর পাঠ্যবইয়ের উদাহরণ ও প্রশ্ন সমাধান করো।`
+            ];
+            examplesList = [
+                `দৈনন্দিন জীবনে "${selectedTopic}"-এর বাস্তব প্রয়োগ লক্ষ্য করা যায়।`,
+                `"${selectedChapter}" অধ্যায়ের অনুশীলনীর প্রশ্নে ${selectedTopic}-এর নিয়ম ব্যবহৃত হয়।`
+            ];
+        } else {
+            explanationText = wiki
+                ? wiki.summary
+                : `${selectedTopic} is an important concept under the chapter "${selectedChapter}" in Class ${selectedClass} ${selectedSubject}. It forms a core foundation for understanding principles and problem-solving in this chapter.`;
+            notesList = [
+                `Understand the core definition and principles of ${selectedTopic}.`,
+                `Connect ${selectedTopic} with the broader concepts of ${selectedChapter}.`,
+                `Practice step-by-step examples from your Class ${selectedClass} textbook.`
+            ];
+            examplesList = [
+                `Observe how ${selectedTopic} works in everyday life around home or school.`,
+                `Solve textbook problems based on ${selectedTopic} from ${selectedChapter}.`
+            ];
+        }
+    }
+
+    const uiLabels = {
+        en: {
+            concept: "Detailed Explanation",
+            formula: "Key Formula / Rule",
+            notesHead: `Smart Notes: ${titleText}`,
+            exHead: `Practical & Real-Life Examples: ${titleText}`
+        },
+        hi: {
+            concept: "विस्तृत व्याख्या (Explanation)",
+            formula: "मुख्य सूत्र / नियम (Formula / Rule)",
+            notesHead: `स्मार्ट नोट्स: ${titleText}`,
+            exHead: `व्यावहारिक उदाहरण (Examples): ${titleText}`
+        },
+        bn: {
+            concept: "বিস্তারিত ব্যাখ্যা (Explanation)",
+            formula: "মূল সূত্র / নিয়ম (Formula / Rule)",
+            notesHead: `স্মার্ট নোটস: ${titleText}`,
+            exHead: `বাস্তব উদাহরণ (Examples): ${titleText}`
+        }
+    }[lang];
+
+    const explanationHTML = `
+        <h2>${escapeHTML(titleText)}</h2>
+        <p><strong>Class ${escapeHTML(selectedClass)} • ${escapeHTML(subjName)} • ${escapeHTML(selectedChapter)}</strong></p>
+        <div class="lesson-block">
+            <strong>${uiLabels.concept}</strong>
+            <p style="margin-top:8px">${escapeHTML(explanationText)}</p>
+        </div>
+        ${formulaText ? `
+        <div class="lesson-block">
+            <strong>${uiLabels.formula}</strong>
+            <p style="margin-top:8px">${escapeHTML(formulaText)}</p>
+        </div>` : ""}
+    `;
+
+    const notesHTML = `
+        <div class="lesson-block">
+            <strong>${escapeHTML(uiLabels.notesHead)}</strong>
+            <ul style="margin-top:10px">${notesList.map(n => `<li>${escapeHTML(n)}</li>`).join("")}</ul>
+            ${formulaText ? `<p style="margin-top:10px"><strong>${uiLabels.formula}:</strong> ${escapeHTML(formulaText)}</p>` : ""}
+        </div>
+    `;
+
+    const examplesHTML = `
+        <div class="lesson-block">
+            <strong>${escapeHTML(uiLabels.exHead)}</strong>
+            <ul style="margin-top:10px">${examplesList.map(ex => `<li>${escapeHTML(ex)}</li>`).join("")}</ul>
+        </div>
+    `;
+
+    return { explanationHTML, notesHTML, examplesHTML };
+}
+
+async function startTeaching() {
+    const selectedClass = getSelectedClass();
+    const selectedSubject = getSelectedSubject();
+    const selectedChapter = chapterSelect.value;
+    const selectedTopic = topicSelect.value;
+
+    if (!selectedClass || !selectedSubject || !selectedChapter || !selectedTopic) {
+        alert("Please select Class, Subject, Chapter and Topic first.");
+        return;
+    }
+
+    stopSpeech();
+
+    currentLesson = {
+        class: selectedClass,
+        board: boardSelect.value,
+        subject: selectedSubject,
+        chapter: selectedChapter,
+        topic: selectedTopic,
+        language: getLanguageName()
+    };
+    lastDiscussedTopic = selectedTopic;
+
+    currentLessonTitle.textContent = selectedTopic;
+    currentLessonDetails.textContent = `Class ${selectedClass} • ${selectedSubject} • ${selectedChapter}`;
+    activeLanguage.textContent = getLanguageName();
+    classroomContainer.classList.add("active");
+
+    learningStartTime = Date.now();
+    currentChapterTopics = SYLLABUS[selectedClass][selectedSubject][selectedChapter];
+    currentTopicIndex = currentChapterTopics.indexOf(selectedTopic);
+
+    const pkg = await buildLessonPackage(selectedClass, selectedSubject, selectedChapter, selectedTopic);
+    currentLessonHTML = pkg.explanationHTML;
+    currentNotesHTML = pkg.notesHTML;
+    currentExamplesHTML = pkg.examplesHTML;
+
+    lessonOutput.innerHTML = currentLessonHTML;
+    const lang = getLanguage();
+    teacherStatus.textContent = lang === "hi"
+        ? "पाठ तैयार है (▶ दबाकर सुनें)"
+        : (lang === "bn" ? "পাঠ প্রস্তুত (▶ চেপে শুনুন)" : "Lesson ready (Press ▶ to listen)");
+
+    saveLessonNotes();
+    updateLessonTab("notes");
+    lessonProgressBar.style.width = "0%";
+    lessonProgressText.textContent = "0%";
+    createSpeechChunks(currentLessonHTML);
+}
+
+startTeachingBtn?.addEventListener("click", startTeaching);
+
+function htmlToPlainText(html) {
+    const element = document.createElement("div");
+    element.innerHTML = html;
+    return element.innerText || element.textContent || "";
+}
+
+function splitTextIntoSafeChunks(rawText) {
+    const clean = String(rawText || "").replace(/\s+/g, " ").trim();
+    if (!clean) return [];
+    const pieces = clean
+        .replace(/([.!?।])\s+/g, "$1|")
+        .split("|")
+        .map(s => s.trim())
+        .filter(Boolean);
+
+    const finalChunks = [];
+    for (let i = 0; i < pieces.length; i++) {
+        let seg = pieces[i];
+        while (seg.length > 160) {
+            let cut = seg.lastIndexOf(" ", 160);
+            if (cut < 60) cut = 160;
+            finalChunks.push(seg.slice(0, cut).trim());
+            seg = seg.slice(cut).trim();
+        }
+        if (seg) finalChunks.push(seg);
+    }
+    return finalChunks;
+}
+
+function createSpeechChunks(content) {
+    speechChunks = splitTextIntoSafeChunks(htmlToPlainText(content));
+    currentSpeechIndex = 0;
+}
+
+function getBestVoiceForLang(langCode) {
+    if (!("speechSynthesis" in window)) return null;
+    const voices = window.speechSynthesis.getVoices() || [];
+    if (!voices.length) return null;
+    const lower = langCode.toLowerCase();
+    const prefix = lower.slice(0, 2);
+
+    return voices.find(v => v.lang && v.lang.toLowerCase() === lower) ||
+           voices.find(v => v.lang && v.lang.toLowerCase().startsWith(prefix)) ||
+           (prefix === "bn" ? voices.find(v => v.lang && v.lang.toLowerCase().startsWith("hi")) : null) ||
+           null;
+}
+
+function speakCurrentSentence() {
+    if (!speechChunks.length) {
+        alert("Please start a lesson first.");
+        return;
+    }
+    if (currentSpeechIndex >= speechChunks.length) {
+        finishSpeaking();
+        return;
+    }
+
+    const text = speechChunks[currentSpeechIndex];
+    const utterance = new SpeechSynthesisUtterance(text);
+    const langCode = languageSelect.value;
+    utterance.lang = langCode;
+    utterance.rate = 0.92;
+    utterance.pitch = 1;
+    utterance.volume = 1;
+
+    const voice = getBestVoiceForLang(langCode);
+    if (voice) utterance.voice = voice;
+
+    const session = speechSession;
+
+    utterance.onstart = () => {
+        if (session !== speechSession) return;
+        isSpeaking = true;
+        isPaused = false;
+        const lang = getLanguage();
+        teacherStatus.textContent = lang === "hi"
+            ? "AI टीचर हिंदी में समझा रहे हैं..."
+            : (lang === "bn" ? "AI শিক্ষক বাংলায় বোঝাচ্ছেন..." : "AI Teacher is teaching...");
+    };
+
+    utterance.onend = () => {
+        if (session !== speechSession) return;
+        currentSpeechIndex++;
+        updateSpeechProgress();
+        if (currentSpeechIndex < speechChunks.length) {
+            speakCurrentSentence();
+        } else {
+            finishSpeaking();
+        }
+    };
+
+    utterance.onerror = () => {
+        if (session !== speechSession) return;
+        finishSpeaking();
+    };
+
+    window.speechSynthesis.speak(utterance);
+}
+
+function startSpeaking() {
+    if (!("speechSynthesis" in window)) {
+        alert("Your browser does not support voice teaching.");
+        return;
+    }
+    if (!speechChunks.length) {
+        alert("Please start a lesson first.");
+        return;
+    }
+    if (isPaused && window.speechSynthesis.paused) {
+        window.speechSynthesis.resume();
+        isPaused = false;
+        isSpeaking = true;
+        return;
+    }
+    stopSpeech();
+    const session = speechSession;
+    speechTimer = setTimeout(() => {
+        if (session === speechSession) speakCurrentSentence();
+    }, 50);
+}
+
+function pauseSpeaking() {
+    if (!isSpeaking) return;
+    window.speechSynthesis.pause();
+    isPaused = true;
+    isSpeaking = false;
+    teacherStatus.textContent = getLanguage() === "hi" ? "पाठ रुका हुआ है" : "Lesson paused";
+}
+
+function stopSpeech() {
+    speechSession++;
+    if (speechTimer) {
+        clearTimeout(speechTimer);
+        speechTimer = null;
+    }
+    if ("speechSynthesis" in window) {
+        try { window.speechSynthesis.cancel(); } catch (e) {}
+    }
+    isSpeaking = false;
+    isPaused = false;
+}
+
+function finishSpeaking() {
+    isSpeaking = false;
+    isPaused = false;
+    const lang = getLanguage();
+    teacherStatus.textContent = lang === "hi" ? "पाठ पूरा हुआ" : (lang === "bn" ? "পাঠ সম্পূর্ণ হয়েছে" : "Lesson completed");
+    lessonProgressBar.style.width = "100%";
+    lessonProgressText.textContent = "100%";
+    if (currentLesson) markLessonCompleted();
+}
+
+function repeatSpeaking() {
+    if (!speechChunks.length) return;
+    stopSpeech();
+    currentSpeechIndex = 0;
+    updateSpeechProgress();
+    const session = speechSession;
+    speechTimer = setTimeout(() => {
+        if (session === speechSession) speakCurrentSentence();
+    }, 50);
+}
+
+function updateSpeechProgress() {
+    const percentage = speechChunks.length
+        ? Math.round((currentSpeechIndex / speechChunks.length) * 100)
+        : 0;
+    lessonProgressBar.style.width = percentage + "%";
+    lessonProgressText.textContent = percentage + "%";
+}
+
+playLessonBtn?.addEventListener("click", startSpeaking);
+pauseLessonBtn?.addEventListener("click", pauseSpeaking);
+repeatLessonBtn?.addEventListener("click", repeatSpeaking);
+
+function changeTopic(direction) {
+    if (!currentLesson || !currentChapterTopics.length) {
+        alert("Please start a lesson first.");
+        return;
+    }
+    const nextIndex = currentTopicIndex + direction;
+    if (nextIndex < 0) {
+        alert("This is the first topic in this chapter.");
+        return;
+    }
+    if (nextIndex >= currentChapterTopics.length) {
+        alert("You have reached the last topic in this chapter.");
+        return;
+    }
+    currentTopicIndex = nextIndex;
+    topicSelect.value = currentChapterTopics[currentTopicIndex];
+    startTeaching();
+}
+
+nextLessonBtn?.addEventListener("click", () => changeTopic(1));
+previousLessonBtn?.addEventListener("click", () => changeTopic(-1));
+
+function saveLessonNotes() {
+    if (!currentLesson || !currentNotesHTML) return;
+    const note = {
+        id: `${currentLesson.class}-${currentLesson.subject}-${currentLesson.chapter}-${currentLesson.topic}`,
+        class: currentLesson.class,
+        subject: currentLesson.subject,
+        chapter: currentLesson.chapter,
+        topic: currentLesson.topic,
+        language: currentLesson.language,
+        htmlContent: currentNotesHTML,
+        plainPreview: htmlToPlainText(currentNotesHTML).slice(0, 320),
+        date: new Date().toLocaleDateString()
+    };
+    appData.notes = appData.notes.filter(item => item.id !== note.id);
+    appData.notes.unshift(note);
+    saveData();
+    renderNotes();
+}
+
+function renderNotes() {
+    if (!notesContainer) return;
+    if (!appData.notes.length) {
+        notesContainer.innerHTML = `
+            <div class="empty-state">
+                <i class="fa-solid fa-book"></i>
+                <h3>No Notes Yet</h3>
+                <p>Start a lesson to generate your notes.</p>
+            </div>
+        `;
+        return;
+    }
+
+    notesContainer.innerHTML = "";
+    appData.notes.forEach(note => {
+        const card = document.createElement("div");
+        card.className = "note-card";
+
+        const title = document.createElement("h3");
+        title.textContent = `Class ${note.class} • ${note.topic}`;
+
+        const details = document.createElement("p");
+        details.textContent = `${note.subject} | ${note.chapter} | ${note.date}`;
+
+        const preview = document.createElement("p");
+        preview.textContent = note.plainPreview || htmlToPlainText(note.htmlContent || "").slice(0, 320);
+
+        const button = document.createElement("button");
+        button.className = "control-btn";
+        button.title = "View Full Notes";
+        button.innerHTML = '<i class="fa-solid fa-eye"></i>';
+        button.addEventListener("click", () => showSavedNote(note));
+
+        card.append(title, details, preview, button);
+        notesContainer.appendChild(card);
+    });
+}
+
+function showSavedNote(note) {
+    notesContainer.innerHTML = "";
+    const card = document.createElement("div");
+    card.className = "note-card";
+
+    const heading = document.createElement("h3");
+    heading.textContent = `Class ${note.class} • ${note.topic} (${note.chapter})`;
+
+    const content = document.createElement("div");
+    content.innerHTML = note.htmlContent || "";
+
+    const back = document.createElement("button");
+    back.className = "back-notes-btn";
+    back.textContent = "← Back to My Notes";
+    back.addEventListener("click", renderNotes);
+
+    card.append(heading, content, back);
+    notesContainer.appendChild(card);
+}
+
+function updateLessonTab(tab) {
+    document.querySelectorAll(".lesson-tool").forEach(button => {
+        button.classList.toggle("active", button.dataset.tab === tab);
+    });
+    document.querySelectorAll(".lesson-tab-panel").forEach(panel => {
+        panel.classList.remove("active");
+    });
+
+    const panel = $(tab + "Panel");
+    if (panel) panel.classList.add("active");
+
+    if (tab === "notes" && smartNotes) {
+        smartNotes.innerHTML = currentNotesHTML
+            ? currentNotesHTML
+            : "<p>Select a topic and click Start Teaching to generate notes.</p>";
+    }
+
+    if (tab === "examples" && practicalExamples) {
+        practicalExamples.innerHTML = currentExamplesHTML
+            ? currentExamplesHTML
+            : "<p>Select a topic and click Start Teaching to see examples.</p>";
+    }
+}
+
+document.querySelectorAll(".lesson-tool").forEach(button => {
+    button.addEventListener("click", () => updateLessonTab(button.dataset.tab));
+});
+
+function speakChatChunks(chunks, idx, session) {
+    if (session !== speechSession || idx >= chunks.length) return;
+    const utter = new SpeechSynthesisUtterance(chunks[idx]);
+    const langCode = languageSelect.value;
+    utter.lang = langCode;
+    utter.rate = 0.94;
+    const voice = getBestVoiceForLang(langCode);
+    if (voice) utter.voice = voice;
+    utter.onend = () => speakChatChunks(chunks, idx + 1, session);
+    utter.onerror = () => {};
+    window.speechSynthesis.speak(utter);
+}
+
+function speakPlainText(text) {
+    if (!("speechSynthesis" in window) || !text) return;
+    stopSpeech();
+    const chunks = splitTextIntoSafeChunks(text);
+    if (!chunks.length) return;
+    const session = speechSession;
+    speechTimer = setTimeout(() => {
+        speakChatChunks(chunks, 0, session);
+    }, 50);
+}
+
+$("welcomeSpeakBtn")?.addEventListener("click", () => {
+    speakPlainText($("welcomeChatText")?.textContent || "");
+});
+
+chatVoiceToggle?.addEventListener("click", () => {
+    chatAutoVoice = !chatAutoVoice;
+    chatVoiceToggle.classList.toggle("muted", !chatAutoVoice);
+    chatVoiceToggle.querySelector("i").className = chatAutoVoice
+        ? "fa-solid fa-volume-high"
+        : "fa-solid fa-volume-xmark";
+    if (chatVoiceLabel) chatVoiceLabel.textContent = chatAutoVoice ? "Voice ON" : "Voice OFF";
+    if (!chatAutoVoice) stopSpeech();
+});
+
+function addChatMessage(message, sender = "ai", autoSpeak = false) {
+    const messageBox = document.createElement("div");
+    messageBox.className = sender === "student" ? "student-message" : "ai-message";
+
+    const avatar = document.createElement("div");
+    avatar.className = "chat-avatar";
+    avatar.innerHTML = sender === "student"
+        ? '<i class="fa-solid fa-user"></i>'
+        : '<i class="fa-solid fa-robot"></i>';
+
+    const content = document.createElement("div");
+    content.className = "message-content";
+
+    const header = document.createElement("div");
+    header.className = "msg-header";
+
+    const name = document.createElement("span");
+    name.textContent = sender === "student" ? "YOU" : "AI Master";
+    header.appendChild(name);
+
+    if (sender === "ai") {
+        const speakBtn = document.createElement("button");
+        speakBtn.type = "button";
+        speakBtn.className = "msg-speak-btn";
+        const lang = getLanguage();
+        speakBtn.textContent = lang === "hi" ? "🔊 सुनें" : (lang === "bn" ? "🔊 শুনুন" : "🔊 Listen");
+        speakBtn.addEventListener("click", () => speakPlainText(message));
+        header.appendChild(speakBtn);
+    }
+
+    const text = document.createElement("p");
+    text.textContent = message;
+
+    content.append(header, text);
+    messageBox.append(avatar, content);
+    chatMessages.appendChild(messageBox);
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+
+    if (sender === "ai" && autoSpeak && chatAutoVoice) {
+        speakPlainText(message);
+    }
+}
+
+function cleanUserQuestion(raw) {
+    let s = String(raw || "").trim();
+    const prefixes = ["what is ", "what are ", "define ", "explain ", "tell me about ", "write about ", "describe ", "meaning of ", "formula of ", "formula for ", "kya hai ", "samjhao ", "batao "];
+    const suffixes = [" kya hai", " kya hota hai", " kise kehte hain", " samjhao", " batao", " क्या है", " क्या होता है", " किसे कहते हैं", " समझाओ", " बताओ", " কি", " কাকে বলে", " বোঝাও"];
+    let low = s.toLowerCase();
+    for (let i = 0; i < prefixes.length; i++) {
+        if (low.startsWith(prefixes[i])) {
+            s = s.slice(prefixes[i].length).trim();
+            low = s.toLowerCase();
+        }
+    }
+    for (let i = 0; i < suffixes.length; i++) {
+        if (low.endsWith(suffixes[i])) {
+            s = s.slice(0, s.length - suffixes[i].length).trim();
+            low = s.toLowerCase();
+        }
+    }
+    return s.replace(/[?!.।]+$/g, "").trim();
+}
+
+async function generateChatReply(rawQuestion) {
+    const lang = getLanguage();
+    const qLower = String(rawQuestion || "").trim().toLowerCase();
+
+    if (/^(hi|hello|hey|namaste|नमस्ते|নমস্কার)\b/.test(qLower)) {
+        if (lang === "hi") return "नमस्ते! मैं आपका DEVIL AI टीचर हूँ। आप गणित या विज्ञान का कौन-सा टॉपिक या सवाल समझना चाहते हैं?";
+        if (lang === "bn") return "নমস্কার! আমি তোমার DEVIL AI শিক্ষক। গণিত বা বিজ্ঞানের কোন বিষয়টি তুমি বুঝতে চাও?";
+        return "Hello! I am your AI Master. Which Mathematics or Science topic or question would you like to learn today?";
+    }
+
+    const asksExample = qLower.includes("example") || qLower.includes("उदाहरण") || qLower.includes("উদাহরণ");
+    const asksFormula = qLower.includes("formula") || qLower.includes("सूत्र") || qLower.includes("সূত্র");
+
+    const cleaned = cleanUserQuestion(rawQuestion);
+    const searchTopic = (asksExample || asksFormula) && cleaned.length < 4 && lastDiscussedTopic
+        ? lastDiscussedTopic
+        : cleaned;
+
+    const entry = findTopicEntry(searchTopic);
+    if (entry) {
+        const loc = entry[lang] || entry.en;
+        lastDiscussedTopic = loc.title;
+        if (asksExample && loc.examples && loc.examples.length) {
+            const head = lang === "hi" ? `${loc.title} के व्यावहारिक उदाहरण:` : (lang === "bn" ? `${loc.title}-এর বাস্তব উদাহরণ:` : `Practical Examples of ${loc.title}:`);
+            return `${head}\n• ${loc.examples.join("\n• ")}`;
+        }
+        if (asksFormula && loc.formula) {
+            const head = lang === "hi" ? `${loc.title} का मुख्य सूत्र:` : (lang === "bn" ? `${loc.title}-এর মূল সূত্র:` : `Key Formula for ${loc.title}:`);
+            return `${head}\n${loc.formula}\n\n${loc.explanation}`;
+        }
+        let reply = `${loc.title}:\n${loc.explanation}`;
+        if (loc.notes && loc.notes.length) {
+            const ptsLabel = lang === "hi" ? "मुख्य बिंदु:" : (lang === "bn" ? "মূল পয়েন্ট:" : "Key Points:");
+            reply += `\n\n${ptsLabel}\n• ${loc.notes.slice(0, 3).join("\n• ")}`;
+        }
+        if (loc.formula) {
+            const frmLabel = lang === "hi" ? "सूत्र:" : (lang === "bn" ? "সূত্র:" : "Formula:");
+            reply += `\n\n${frmLabel} ${loc.formula}`;
+        }
+        return reply;
+    }
+
+    const sylMatch = findSyllabusContext(searchTopic);
+    if (sylMatch) {
+        lastDiscussedTopic = sylMatch.topic;
+        const pkg = await buildLessonPackage(sylMatch.class, sylMatch.subject, sylMatch.chapter, sylMatch.topic);
+        return htmlToPlainText(pkg.explanationHTML).trim();
+    }
+
+    const wiki = await fetchEnglishWikiSafe(searchTopic);
+    if (wiki) {
+        lastDiscussedTopic = wiki.title;
+        if (lang === "hi") {
+            return `${wiki.title} (Class ${getSelectedClass() || "5–10"}):\n${wiki.summary}`;
+        }
+        if (lang === "bn") {
+            return `${wiki.title}:\n${wiki.summary}`;
+        }
+        return `${wiki.title}:\n${wiki.summary}`;
+    }
+
+    if (lang === "hi") {
+        return `आपने "${rawQuestion}" के बारे में पूछा है। कृपया गणित या विज्ञान का स्पष्ट टॉपिक नाम लिखें (जैसे: प्रकाश संश्लेषण, ओम का नियम, अम्ल के गुण, गति, गुरुत्वाकर्षण, आयत का क्षेत्रफल, द्विघात समीकरण, पाइथागोरस प्रमेय) ताकि मैं हिंदी में विस्तार से समझा सकूँ।`;
+    }
+    if (lang === "bn") {
+        return `তুমি "${rawQuestion}" সম্পর্কে জিজ্ঞাসা করেছ। অনুগ্রহ করে গণিত বা বিজ্ঞানের একটি নির্দিষ্ট বিষয়ের নাম লেখো (যেমন: সালোকসংশ্লেষ, ওহমের সূত্র, অ্যাসিডের ধর্ম, গতি, মহাকর্ষ, আয়তক্ষেত্রের ক্ষেত্রফল) যাতে আমি বাংলায় বুঝিয়ে দিতে পারি।`;
+    }
+    return `You asked about "${rawQuestion}". Please enter a specific Mathematics or Science topic (for example: Photosynthesis, Ohm's Law, Properties of Acids, Motion, Gravitation, Area of Rectangle, Quadratic Formula, or Pythagoras Theorem) for a clear explanation.`;
+}
+
+async function sendQuestion() {
+    const question = studentQuestion.value.trim();
+    if (!question) return;
+
+    if (question.length > CONFIG.MAX_CHAT_LENGTH) {
+        alert("Please keep your question under 2000 characters.");
+        return;
+    }
+
+    studentQuestion.value = "";
+    addChatMessage(question, "student", false);
+
+    const typing = document.createElement("div");
+    typing.className = "ai-message";
+    typing.innerHTML = `
+        <div class="chat-avatar"><i class="fa-solid fa-robot"></i></div>
+        <div class="message-content">
+            <div class="msg-header"><span>AI Master</span></div>
+            <div class="typing-indicator"><span></span><span></span><span></span></div>
+        </div>
+    `;
+    chatMessages.appendChild(typing);
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+
+    const reply = await generateChatReply(question);
+    typing.remove();
+    addChatMessage(reply, "ai", true);
+}
+
+sendQuestionBtn?.addEventListener("click", sendQuestion);
+studentQuestion?.addEventListener("keydown", event => {
+    if (event.key === "Enter" && !event.shiftKey) {
+        event.preventDefault();
+        sendQuestion();
+    }
+});
+
+function initializeVoiceInput() {
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SpeechRecognition) {
+        if (voiceInputBtn) voiceInputBtn.title = "Voice recognition is not supported in this browser.";
+        return;
+    }
+
+    recognition = new SpeechRecognition();
+    recognition.continuous = false;
+    recognition.interimResults = false;
+    recognition.maxAlternatives = 1;
+
+    recognition.onstart = () => {
+        isListening = true;
+        voiceInputBtn.innerHTML = '<i class="fa-solid fa-microphone-lines"></i>';
+        voiceInputBtn.style.color = "#fb7185";
+    };
+
+    recognition.onresult = event => {
+        const transcript = event.results[0][0].transcript;
+        studentQuestion.value = `${studentQuestion.value} ${transcript}`.trim();
+    };
+
+    recognition.onerror = event => {
+        if (event.error !== "no-speech") alert("Voice input could not be completed. Please try again.");
+    };
+
+    recognition.onend = () => {
+        isListening = false;
+        voiceInputBtn.innerHTML = '<i class="fa-solid fa-microphone"></i>';
+        voiceInputBtn.style.color = "";
+    };
+}
+
+voiceInputBtn?.addEventListener("click", () => {
+    if (!recognition) {
+        alert("Voice recognition is not supported in this browser.");
+        return;
+    }
+    if (isListening) {
+        recognition.stop();
+        return;
+    }
+    recognition.lang = languageSelect.value;
+    recognition.start();
+});
+
+initializeVoiceInput();
+
+function markLessonCompleted() {
+    if (!currentLesson) return;
+    const id = [currentLesson.class, currentLesson.subject, currentLesson.chapter, currentLesson.topic].join("-");
+    if (!appData.completedLessons.includes(id)) appData.completedLessons.push(id);
+    const elapsed = learningStartTime ? Math.max(0, Math.floor((Date.now() - learningStartTime) / 60000)) : 0;
+    appData.learningMinutes += elapsed;
+    learningStartTime = null;
+    saveData();
+    updateProgress();
+}
+
+function updateProgress() {
+    if ($("completedLessons")) $("completedLessons").textContent = appData.completedLessons.length;
+    if ($("learningTime")) $("learningTime").textContent = appData.learningMinutes + " min";
+}
+
+function recordCurrentSession() {
+    if (!learningStartTime) return;
+    const elapsed = Math.floor((Date.now() - learningStartTime) / 60000);
+    if (elapsed > 0) {
+        appData.learningMinutes += elapsed;
+        learningStartTime = Date.now();
+        saveData();
+        updateProgress();
+    }
+}
+
+document.addEventListener("visibilitychange", () => {
+    if (document.hidden) recordCurrentSession();
+});
+
+const sidebarLinks = document.querySelectorAll(".sidebar-link");
+
+function navigateSection(sectionName) {
+    document.querySelectorAll(".content-section").forEach(section => section.classList.remove("active"));
+    const target = $(sectionName);
+    if (target) target.classList.add("active");
+
+    sidebarLinks.forEach(link => link.classList.toggle("active", link.dataset.section === sectionName));
+
+    const doubtSection = document.querySelector(".doubt-section");
+    if (doubtSection) doubtSection.style.display = sectionName === "classroom" ? "block" : "none";
+
+    if (sectionName === "notes") renderNotes();
+    if (sectionName === "progress") updateProgress();
+}
+
+sidebarLinks.forEach(link => {
+    link.addEventListener("click", () => navigateSection(link.dataset.section));
+});
+
+const themeToggle = $("themeToggle");
+
+function applyTheme(theme) {
+    const light = theme === "light";
+    document.body.classList.toggle("light-theme", light);
+    if (themeToggle) {
+        themeToggle.innerHTML = light ? '<i class="fa-solid fa-sun"></i>' : '<i class="fa-solid fa-moon"></i>';
+    }
+    appData.theme = theme;
+    saveData();
+}
+
+themeToggle?.addEventListener("click", () => {
+    const nextTheme = document.body.classList.contains("light-theme") ? "dark" : "light";
+    applyTheme(nextTheme);
+});
+
+const fullscreenBtn = $("fullscreenBtn");
+fullscreenBtn?.addEventListener("click", async () => {
+    try {
+        if (!document.fullscreenElement) await document.documentElement.requestFullscreen();
+        else await document.exitFullscreen();
+    } catch (error) {}
+});
+
+function initializeApp() {
+    applyTheme(appData.theme || "dark");
+    updateProgress();
+    renderNotes();
+    loadChapters();
+    updateLanguageUI();
+    if ("speechSynthesis" in window) {
+        window.speechSynthesis.getVoices();
+        window.speechSynthesis.onvoiceschanged = () => window.speechSynthesis.getVoices();
+    }
+    navigateSection("classroom");
+}
+
+if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", initializeApp);
+} else {
+    initializeApp();
+}
+
+window.addEventListener("beforeunload", () => {
+    stopSpeech();
+    recordCurrentSession();
+});
+</script>
+</body>
+</html>

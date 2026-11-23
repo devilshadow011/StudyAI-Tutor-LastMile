@@ -1,0 +1,1041 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>MOTION – Complete Physics Animated Masterclass</title>
+<style>
+  :root {
+    --bg: #070b14;
+    --panel: #0f172a;
+    --board: #0b1322;
+    --border: rgba(73, 229, 255, 0.22);
+    --cyan: #49e5ff;
+    --amber: #f5c451;
+    --crimson: #ff5c77;
+    --green: #34d399;
+    --text: #e2e8f0;
+    --muted: #94a3b8;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', system-ui, sans-serif; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+  header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 24px;
+    background: rgba(15, 23, 42, 0.92);
+    border-bottom: 1px solid var(--border);
+  }
+  header h1 {
+    font-size: 1.1rem;
+    letter-spacing: 0.5px;
+    color: var(--cyan);
+  }
+  header span {
+    font-size: 0.85rem;
+    color: var(--amber);
+    font-weight: 600;
+  }
+  .stage-wrapper {
+    max-width: 1220px;
+    width: 100%;
+    margin: 16px auto;
+    padding: 0 16px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .video-frame {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    background: radial-gradient(circle at top right, #12213d, #060a12 75%);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    overflow: hidden;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.65);
+  }
+  canvas {
+    width: 100%;
+    height: 100%;
+    display: block;
+  }
+  .blackboard {
+    position: absolute;
+    top: 18px;
+    right: 18px;
+    width: 34%;
+    max-height: 62%;
+    background: rgba(10, 18, 34, 0.88);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(73, 229, 255, 0.35);
+    border-radius: 10px;
+    padding: 14px 16px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+    transition: opacity 0.3s ease;
+    overflow-y: auto;
+  }
+  .blackboard h3 {
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--amber);
+    margin-bottom: 8px;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+    padding-bottom: 4px;
+  }
+  .blackboard-content {
+    font-size: 0.88rem;
+    line-height: 1.45;
+    color: #f1f5f9;
+  }
+  .formula-box {
+    background: rgba(73, 229, 255, 0.1);
+    border-left: 3px solid var(--cyan);
+    padding: 6px 10px;
+    margin: 8px 0;
+    font-family: 'Courier New', monospace;
+    font-weight: bold;
+    font-size: 0.98rem;
+    color: var(--cyan);
+  }
+  .teacher-badge {
+    position: absolute;
+    top: 18px;
+    left: 18px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: rgba(15, 23, 42, 0.85);
+    border: 1px solid var(--border);
+    padding: 8px 14px;
+    border-radius: 999px;
+  }
+  .teacher-avatar {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--cyan), #2563eb);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    color: #050a14;
+    font-size: 0.9rem;
+  }
+  .scene-meta small { display: block; font-size: 0.72rem; color: var(--amber); }
+  .scene-meta strong { font-size: 0.9rem; color: #fff; }
+  .subtitle-bar {
+    position: absolute;
+    bottom: 18px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 82%;
+    background: rgba(4, 7, 15, 0.86);
+    border: 1px solid rgba(255,255,255,0.12);
+    padding: 10px 18px;
+    border-radius: 8px;
+    text-align: center;
+    font-size: 0.98rem;
+    line-height: 1.4;
+    color: #ffffff;
+    text-shadow: 0 1px 2px #000;
+  }
+  .quiz-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(7, 11, 20, 0.92);
+    display: none;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 28px;
+    z-index: 10;
+  }
+  .quiz-overlay.active { display: flex; }
+  .quiz-card {
+    max-width: 640px;
+    width: 100%;
+    background: var(--panel);
+    border: 1px solid var(--cyan);
+    border-radius: 12px;
+    padding: 24px;
+  }
+  .quiz-card h2 { color: var(--amber); font-size: 1.1rem; margin-bottom: 12px; }
+  .quiz-card p.q-text { font-size: 1.15rem; margin-bottom: 16px; }
+  .quiz-options { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .quiz-opt {
+    background: #1e293b;
+    border: 1px solid rgba(255,255,255,0.15);
+    color: #fff;
+    padding: 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    text-align: left;
+    font-size: 0.95rem;
+    transition: 0.2s;
+  }
+  .quiz-opt:hover { border-color: var(--cyan); }
+  .quiz-opt.correct { background: rgba(52, 211, 153, 0.25); border-color: var(--green); }
+  .quiz-opt.wrong { background: rgba(255, 92, 119, 0.25); border-color: var(--crimson); }
+  .quiz-feedback { margin-top: 14px; font-size: 0.92rem; color: var(--cyan); min-height: 22px; }
+  .quiz-nav { margin-top: 14px; display: flex; justify-content: flex-end; }
+  .controls {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 12px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .control-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+  button.ctrl-btn {
+    background: #1e293b;
+    color: #fff;
+    border: 1px solid rgba(73, 229, 255, 0.3);
+    padding: 7px 14px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 0.85rem;
+  }
+  button.ctrl-btn.primary {
+    background: var(--cyan);
+    color: #050a14;
+    border: none;
+  }
+  button.ctrl-btn:hover { opacity: 0.9; }
+  .progress-wrap {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  input[type="range"] {
+    flex: 1;
+    accent-color: var(--cyan);
+    cursor: pointer;
+  }
+  .scene-pills {
+    display: flex;
+    gap: 6px;
+    overflow-x: auto;
+    padding-bottom: 4px;
+  }
+  .pill {
+    background: #0b1322;
+    border: 1px solid rgba(255,255,255,0.12);
+    color: var(--muted);
+    padding: 5px 10px;
+    border-radius: 6px;
+    font-size: 0.76rem;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+  .pill.active {
+    border-color: var(--cyan);
+    color: var(--cyan);
+    background: rgba(73, 229, 255, 0.12);
+    font-weight: 600;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>PHYSICS ANIMATED MASTERCLASS: MOTION</h1>
+  <span id="timestampBadge">00:00 / 20:00 (Masterclass Edition)</span>
+</header>
+
+<div class="stage-wrapper">
+  <div class="video-frame">
+    <canvas id="simCanvas" width="1280" height="720"></canvas>
+
+    <div class="teacher-badge">
+      <div class="teacher-avatar">Dr. P</div>
+      <div class="scene-meta">
+        <small id="sceneTimeLabel">SCENE 1 • 00:00 – 01:00</small>
+        <strong id="sceneTitleLabel">Introduction to Motion</strong>
+      </div>
+    </div>
+
+    <div class="blackboard" id="blackboard">
+      <h3 id="boardTitle">Digital Blackboard</h3>
+      <div class="blackboard-content" id="boardContent"></div>
+    </div>
+
+    <div class="subtitle-bar" id="subtitleBar">
+      Click <strong>Play Lesson</strong> below to start the animated Physics Masterclass with voice-over and live simulations.
+    </div>
+
+    <div class="quiz-overlay" id="quizOverlay">
+      <div class="quiz-card">
+        <h2 id="quizHeader">FINAL QUIZ • QUESTION 1 OF 5</h2>
+        <p class="q-text" id="quizQuestion"></p>
+        <div class="quiz-options" id="quizOptions"></div>
+        <div class="quiz-feedback" id="quizFeedback"></div>
+        <div class="quiz-nav">
+          <button class="ctrl-btn primary" id="nextQuizBtn">Next Question →</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="controls">
+    <div class="control-row">
+      <button class="ctrl-btn primary" id="playPauseBtn" onclick="togglePlay()">▶️ Play Lesson</button>
+      <button class="ctrl-btn" onclick="prevScene()">⏮ Prev</button>
+      <button class="ctrl-btn" onclick="nextScene()">Next ⏭</button>
+      <div class="progress-wrap">
+        <input type="range" id="sceneProgress" min="0" max="100" value="0" oninput="scrubScene(this.value)" />
+      </div>
+      <button class="ctrl-btn" id="voiceBtn" onclick="toggleVoice()">🔊 Voice-Over: ON</button>
+      <button class="ctrl-btn" id="subBtn" onclick="toggleSubtitles()">💬 Subtitles: ON</button>
+    </div>
+    <div class="scene-pills" id="scenePills"></div>
+  </div>
+</div>
+
+<script>
+const SCENES = [
+  {
+    id: 1,
+    time: "00:00 – 01:00",
+    title: "1. Introduction to Motion",
+    duration: 18,
+    boardTitle: "Chapter Roadmap",
+    boardHTML: `
+      <p>Welcome to <strong>MOTION</strong>. Today we cover:</p>
+      <ul style="margin-left:16px; margin-top:6px; color:#cbd5e1;">
+        <li>Rest &amp; Motion (Reference Frames)</li>
+        <li>Distance vs. Displacement</li>
+        <li>Speed, Velocity &amp; Acceleration</li>
+        <li>Uniform &amp; Non-Uniform Motion</li>
+        <li>Newton's Three Laws of Motion</li>
+      </ul>
+    `,
+    narration: "Welcome to today's Physics lesson. Today, we are going to understand one of the most fundamental concepts in Physics: Motion. Look around you: cars move on roads, runners sprint on tracks, trains glide along rails, while a book rests quietly on a table. Let us explore how Physics describes every one of these states."
+  },
+  {
+    id: 2,
+    time: "01:00 – 02:00",
+    title: "2. What is Rest?",
+    duration: 18,
+    boardTitle: "Definition: Rest",
+    boardHTML: `
+      <p>An object is at <strong>rest</strong> if its position does <strong>not</strong> change with respect to time relative to a chosen reference point.</p>
+      <div class="formula-box">ΔPosition = 0 (Relative to Table)</div>
+      <p style="color:#f5c451;">Key Rule: Rest depends on the chosen frame of reference!</p>
+    `,
+    narration: "An object is said to be at rest if its position does not change with respect to time relative to a chosen reference point. Watch the clock tick forward while the book stays at the exact same position on the table. Is the book moving or at rest? Relative to the table, it is at rest—though relative to the Sun, the entire Earth is moving!"
+  },
+  {
+    id: 3,
+    time: "02:00 – 03:00",
+    title: "3. What is Motion?",
+    duration: 18,
+    boardTitle: "Definition: Motion",
+    boardHTML: `
+      <p>An object is in <strong>motion</strong> if its position <strong>changes</strong> with respect to time relative to a chosen reference point.</p>
+      <div class="formula-box">ΔPosition ≠ 0 (Relative to Tree)</div>
+      <p>Stationary tree = Reference Point.<br>Moving car = Position changes over time.</p>
+    `,
+    narration: "An object is said to be in motion if its position changes with respect to time relative to a chosen reference point. Compare the moving car with the stationary roadside tree. As seconds pass, the distance between the car and the tree continuously changes, proving the car is in motion."
+  },
+  {
+    id: 4,
+    time: "03:00 – 05:00",
+    title: "4. Distance vs. Displacement",
+    duration: 22,
+    boardTitle: "Distance vs. Displacement",
+    boardHTML: `
+      <p><strong style="color:#f5c451;">Distance:</strong> Total actual path length travelled. <em>Scalar</em> (always ≥ 0).</p>
+      <p style="margin-top:6px;"><strong style="color:#49e5ff;">Displacement:</strong> Shortest straight-line change from initial to final position with direction. <em>Vector</em> (+, −, or 0).</p>
+      <div class="formula-box">Walk: 5 m → then 3 m ←<br>Distance = 8 m | Displacement = 2 m →</div>
+    `,
+    narration: "Distance is the actual total length of the path travelled—a scalar quantity that is always non-negative. Displacement is the shortest straight-line change in position from initial to final point with direction—a vector quantity. When a person walks 5 metres forward and 3 metres backward, total distance is 8 metres, while displacement is just 2 metres forward."
+  },
+  {
+    id: 5,
+    time: "05:00 – 07:30",
+    title: "5. Speed and Velocity",
+    duration: 22,
+    boardTitle: "Speed & Velocity",
+    boardHTML: `
+      <div class="formula-box">Speed = Distance / Time (m/s)<br>Example: 100 m / 10 s = 10 m/s</div>
+      <div class="formula-box">Velocity = Displacement / Time (m/s)</div>
+      <p><strong>Speed:</strong> Scalar (magnitude only).<br><strong>Velocity:</strong> Vector (magnitude + direction).</p>
+    `,
+    narration: "Speed is distance travelled per unit time, measured in metres per second. If a car travels 100 metres in 10 seconds, its speed is 10 metres per second. Velocity is displacement per unit time. Notice these two cars moving at the same speed: one travels East and the other West. Same speed, different velocities!"
+  },
+  {
+    id: 6,
+    time: "07:30 – 09:30",
+    title: "6. Acceleration",
+    duration: 24,
+    boardTitle: "Acceleration Formula",
+    boardHTML: `
+      <div class="formula-box">a = (v − u) / t &nbsp; [SI Unit: m/s²]</div>
+      <p><strong>u</strong> = Initial velocity | <strong>v</strong> = Final velocity | <strong>t</strong> = Time</p>
+      <p style="margin-top:6px; color:#f5c451;">Note: Negative acceleration means acceleration in the negative direction—not always slowing down.</p>
+      <p style="margin-top:4px;">Ex: u = 10 m/s, v = 20 m/s, t = 5 s → <strong>a = 2 m/s²</strong></p>
+    `,
+    narration: "Acceleration is the rate of change of velocity with respect to time: a equals v minus u divided by t, measured in metres per second squared. Watch the three cars: positive acceleration speeds up from 10 to 20 metres per second; negative acceleration acts in the opposite direction from 20 to 10; and zero acceleration maintains constant velocity."
+  },
+  {
+    id: 7,
+    time: "09:30 – 11:00",
+    title: "7. Types of Motion",
+    duration: 22,
+    boardTitle: "Uniform vs. Non-Uniform",
+    boardHTML: `
+      <p><strong style="color:#34d399;">Uniform Motion:</strong> Equal distances in equal time intervals (10 m, 10 m, 10 m each sec).</p>
+      <p style="margin-top:6px;"><strong style="color:#ff5c77;">Non-Uniform Motion:</strong> Unequal distances in equal time intervals (5 m, 10 m, 15 m).</p>
+      <p style="margin-top:6px; font-size:0.8rem; color:#f5c451;">Note: Uniform speed can occur on a curved path even as velocity direction changes.</p>
+    `,
+    narration: "In uniform motion, an object covers equal distances in equal intervals of time, such as 10 metres every single second, keeping speed constant. In non-uniform motion, it covers unequal distances—like 5 metres, 10 metres, and 15 metres—so its speed changes. Remember, uniform speed can also happen along a curved path!"
+  },
+  {
+    id: 8,
+    time: "11:00 – 13:00",
+    title: "8. Newton's First Law & Inertia",
+    duration: 22,
+    boardTitle: "Newton's First Law",
+    boardHTML: `
+      <p>An object remains at rest or moves at constant velocity in a straight line unless acted upon by a <strong>net external force</strong>.</p>
+      <div class="formula-box">Inertia ∝ Mass</div>
+      <p><strong>Inertia:</strong> Resistance to change in state of rest or motion.</p>
+    `,
+    narration: "Newton's First Law states that an object stays at rest or keeps moving at constant velocity unless a net external force acts on it. This resistance to change is called inertia, and mass measures inertia. When we flick the card quickly, the coin drops straight into the glass. And when a moving bus stops suddenly, passengers lurch forward!"
+  },
+  {
+    id: 9,
+    time: "13:00 – 15:00",
+    title: "9. Newton's Second Law (F = ma)",
+    duration: 22,
+    boardTitle: "Newton's Second Law",
+    boardHTML: `
+      <p>Net force equals the rate of change of momentum. For constant mass:</p>
+      <div class="formula-box">F = m × a &nbsp; [SI Unit: Newton (N)]</div>
+      <p>Ex: Mass = 5 kg, Acceleration = 2 m/s²<br><strong>F = 5 × 2 = 10 N</strong></p>
+    `,
+    narration: "Newton's Second Law states that net force equals the rate of change of momentum, giving F equals m times a for constant mass, measured in Newtons. Pushing an empty trolley produces much higher acceleration than pushing a heavily loaded trolley with the same force. For a 5 kilogram mass accelerating at 2 metres per second squared, force is 10 Newtons."
+  },
+  {
+    id: 10,
+    time: "15:00 – 16:30",
+    title: "10. Newton's Third Law",
+    duration: 22,
+    boardTitle: "Action & Reaction",
+    boardHTML: `
+      <div class="formula-box">Action Force = −Reaction Force</div>
+      <ul style="margin-left:16px; font-size:0.84rem;">
+        <li>Equal in magnitude, opposite in direction</li>
+        <li>Act on <strong>two different objects</strong></li>
+        <li>Never cancel each other out</li>
+      </ul>
+    `,
+    narration: "Newton's Third Law states that for every action, there is an equal and opposite reaction. These forces are equal in size, opposite in direction, and act on two different interacting objects—so they never cancel out. See this when pushing a wall, launching a rocket, swimming forward, or when two balls collide."
+  },
+  {
+    id: 11,
+    time: "16:30 – 18:00",
+    title: "11. Complete Chapter Revision",
+    duration: 20,
+    boardTitle: "Master Formula Sheet",
+    boardHTML: `
+      <div class="formula-box">
+        Speed = Distance / Time (m/s)<br>
+        Velocity = Displacement / Time (m/s)<br>
+        Acceleration: a = (v − u) / t (m/s²)<br>
+        Second Law: F = m × a (N)<br>
+        Third Law: F_action = −F_reaction
+      </div>
+      <p style="color:#34d399;">All 8 core concepts &amp; SI units mastered!</p>
+    `,
+    narration: "Let us quickly revise the entire chapter on our digital blackboard: Rest and Motion depend on your reference frame. Distance is scalar; displacement is vector. Speed and velocity are measured in metres per second; acceleration in metres per second squared. Finally, Newton's three laws govern inertia, F equals ma, and equal-and-opposite action-reaction pairs."
+  },
+  {
+    id: 12,
+    time: "18:00 – 20:00",
+    title: "12. Final Quiz & Conclusion",
+    duration: 30,
+    boardTitle: "Chapter Assessment",
+    boardHTML: `
+      <p>Test your knowledge with <strong>5 Multiple-Choice Questions</strong>!</p>
+      <p style="margin-top:8px; color:#f5c451;">Select the right option on screen to verify each concept.</p>
+    `,
+    narration: "Congratulations on reaching the final stage! Let us test what you have learned with five multiple-choice questions. Answer each question on screen, and remember: keep observing the world around you, because Physics is everywhere!"
+  }
+];
+
+const QUIZ_DATA = [
+  {
+    q: "Q1. Which quantity is a scalar?",
+    options: ["A. Velocity", "B. Displacement", "C. Distance", "D. Acceleration"],
+    answer: 2,
+    explanation: "Correct! Distance has only magnitude and no direction, making it a scalar quantity."
+  },
+  {
+    q: "Q2. What is the SI unit of acceleration?",
+    options: ["A. m/s", "B. m/s²", "C. Newton", "D. Metre"],
+    answer: 1,
+    explanation: "Correct! Acceleration is change in velocity (m/s) per second (s), so its SI unit is m/s²."
+  },
+  {
+    q: "Q3. Which law explains inertia?",
+    options: ["A. First Law", "B. Second Law", "C. Third Law", "D. None"],
+    answer: 0,
+    explanation: "Correct! Newton's First Law is also known as the Law of Inertia."
+  },
+  {
+    q: "Q4. What is the formula of Newton's Second Law for constant mass?",
+    options: ["A. F = mv", "B. F = ma", "C. V = S/T", "D. a = vt"],
+    answer: 1,
+    explanation: "Correct! For constant mass, Net Force equals Mass multiplied by Acceleration (F = ma)."
+  },
+  {
+    q: "Q5. Which law explains rocket propulsion?",
+    options: ["A. First Law", "B. Second Law", "C. Third Law", "D. None"],
+    answer: 2,
+    explanation: "Correct! Exhaust gases push downward (action) and propel the rocket upward (reaction)—Newton's Third Law."
+  }
+];
+
+const canvas = document.getElementById("simCanvas");
+const ctx = canvas.getContext("2d");
+
+let currentSceneIdx = 0;
+let sceneElapsed = 0;
+let isPlaying = false;
+let voiceEnabled = true;
+let subtitlesEnabled = true;
+let lastTimestamp = null;
+let currentQuizIdx = 0;
+
+const pillsContainer = document.getElementById("scenePills");
+SCENES.forEach((s, idx) => {
+  const btn = document.createElement("button");
+  btn.className = "pill" + (idx === 0 ? " active" : "");
+  btn.textContent = s.title;
+  btn.onclick = () => loadScene(idx, true);
+  pillsContainer.appendChild(btn);
+});
+
+function speak(text) {
+  if (!("speechSynthesis" in window)) return;
+  window.speechSynthesis.cancel();
+  if (!voiceEnabled || !isPlaying) return;
+  const utter = new SpeechSynthesisUtterance(text);
+  utter.rate = 0.98;
+  utter.pitch = 1.0;
+  window.speechSynthesis.speak(utter);
+}
+
+function loadScene(idx, autoPlay = isPlaying) {
+  currentSceneIdx = Math.max(0, Math.min(SCENES.length - 1, idx));
+  sceneElapsed = 0;
+  const scene = SCENES[currentSceneIdx];
+
+  document.getElementById("sceneTimeLabel").textContent = `SCENE ${scene.id} • ${scene.time}`;
+  document.getElementById("sceneTitleLabel").textContent = scene.title;
+  document.getElementById("boardTitle").textContent = scene.boardTitle;
+  document.getElementById("boardContent").innerHTML = scene.boardHTML;
+  document.getElementById("subtitleBar").textContent = scene.narration;
+  document.getElementById("sceneProgress").value = 0;
+
+  document.querySelectorAll(".pill").forEach((p, i) => {
+    p.classList.toggle("active", i === currentSceneIdx);
+  });
+
+  const quizOverlay = document.getElementById("quizOverlay");
+  if (currentSceneIdx === 11) {
+    quizOverlay.classList.add("active");
+    renderQuiz(0);
+  } else {
+    quizOverlay.classList.remove("active");
+  }
+
+  if (autoPlay) {
+    isPlaying = true;
+    document.getElementById("playPauseBtn").textContent = "⏸ Pause";
+    speak(scene.narration);
+  } else if ("speechSynthesis" in window) {
+    window.speechSynthesis.cancel();
+  }
+}
+
+function togglePlay() {
+  isPlaying = !isPlaying;
+  document.getElementById("playPauseBtn").textContent = isPlaying ? "⏸ Pause" : "▶️ Play Lesson";
+  if (isPlaying) {
+    speak(SCENES[currentSceneIdx].narration);
+  } else if ("speechSynthesis" in window) {
+    window.speechSynthesis.cancel();
+  }
+}
+
+function nextScene() {
+  if (currentSceneIdx < SCENES.length - 1) loadScene(currentSceneIdx + 1, isPlaying);
+}
+
+function prevScene() {
+  if (currentSceneIdx > 0) loadScene(currentSceneIdx - 1, isPlaying);
+}
+
+function scrubScene(val) {
+  sceneElapsed = (val / 100) * SCENES[currentSceneIdx].duration;
+}
+
+function toggleVoice() {
+  voiceEnabled = !voiceEnabled;
+  document.getElementById("voiceBtn").textContent = voiceEnabled ? "🔊 Voice-Over: ON" : "🔇 Voice-Over: OFF";
+  if (!voiceEnabled && "speechSynthesis" in window) window.speechSynthesis.cancel();
+  else if (isPlaying) speak(SCENES[currentSceneIdx].narration);
+}
+
+function toggleSubtitles() {
+  subtitlesEnabled = !subtitlesEnabled;
+  document.getElementById("subBtn").textContent = subtitlesEnabled ? "💬 Subtitles: ON" : "💬 Subtitles: OFF";
+  document.getElementById("subtitleBar").style.display = subtitlesEnabled ? "block" : "none";
+}
+
+// Quiz Logic (Restart Bug Fixed)
+function renderQuiz(qIdx) {
+  currentQuizIdx = qIdx;
+  const item = QUIZ_DATA[qIdx];
+  document.getElementById("quizHeader").textContent = `FINAL QUIZ • QUESTION ${qIdx + 1} OF ${QUIZ_DATA.length}`;
+  document.getElementById("quizQuestion").textContent = item.q;
+  document.getElementById("quizFeedback").textContent = "";
+  const optsDiv = document.getElementById("quizOptions");
+  optsDiv.innerHTML = "";
+  item.options.forEach((opt, i) => {
+    const btn = document.createElement("button");
+    btn.className = "quiz-opt";
+    btn.textContent = opt;
+    btn.onclick = () => {
+      document.querySelectorAll(".quiz-opt").forEach((b, bi) => {
+        b.disabled = true;
+        if (bi === item.answer) b.classList.add("correct");
+        else if (bi === i) b.classList.add("wrong");
+      });
+      document.getElementById("quizFeedback").textContent = item.explanation;
+      speak(item.explanation);
+    };
+    optsDiv.appendChild(btn);
+  });
+  const nextBtn = document.getElementById("nextQuizBtn");
+  nextBtn.onclick = nextQuestion;
+  nextBtn.textContent = qIdx < QUIZ_DATA.length - 1 ? "Next Question →" : "Finish Masterclass 🎉";
+}
+
+function nextQuestion() {
+  if (currentQuizIdx < QUIZ_DATA.length - 1) {
+    renderQuiz(currentQuizIdx + 1);
+  } else {
+    document.getElementById("quizQuestion").textContent = "Congratulations! You have successfully completed the chapter Motion. Keep observing the world around you, because Physics is everywhere!";
+    document.getElementById("quizOptions").innerHTML = "";
+    document.getElementById("quizFeedback").textContent = "Masterclass Complete • 100% Covered";
+    const nextBtn = document.getElementById("nextQuizBtn");
+    nextBtn.onclick = () => {
+      isPlaying = false;
+      document.getElementById("playPauseBtn").textContent = "▶️ Play Lesson";
+      loadScene(0, false);
+    };
+    nextBtn.textContent = "↻ Restart Lesson";
+    speak("Congratulations! You have successfully completed the chapter Motion. Keep observing the world around you, because Physics is everywhere!");
+  }
+}
+
+// Drawing Helpers
+function drawArrow(x1, y1, x2, y2, color, label = "") {
+  const head = 12;
+  const angle = Math.atan2(y2 - y1, x2 - x1);
+  ctx.save();
+  ctx.strokeStyle = color;
+  ctx.fillStyle = color;
+  ctx.lineWidth = 4;
+  ctx.beginPath();
+  ctx.moveTo(x1, y1);
+  ctx.lineTo(x2, y2);
+  ctx.stroke();
+
+  ctx.beginPath();
+  ctx.moveTo(x2, y2);
+  ctx.lineTo(x2 - head * Math.cos(angle - Math.PI / 6), y2 - head * Math.sin(angle - Math.PI / 6));
+  ctx.lineTo(x2 - head * Math.cos(angle + Math.PI / 6), y2 - head * Math.sin(angle + Math.PI / 6));
+  ctx.closePath();
+  ctx.fill();
+
+  if (label) {
+    ctx.font = "bold 16px Segoe UI";
+    ctx.fillText(label, (x1 + x2) / 2 - 30, y1 - 12);
+  }
+  ctx.restore();
+}
+
+function drawCar(x, y, color = "#49e5ff", scale = 1) {
+  ctx.save();
+  ctx.translate(x, y);
+  ctx.scale(scale, scale);
+  ctx.fillStyle = color;
+  ctx.beginPath();
+  ctx.roundRect(-55, -24, 110, 24, 6);
+  ctx.fill();
+  ctx.fillStyle = "#e2e8f0";
+  ctx.beginPath();
+  ctx.moveTo(-32, -24);
+  ctx.lineTo(-16, -44);
+  ctx.lineTo(22, -44);
+  ctx.lineTo(36, -24);
+  ctx.closePath();
+  ctx.fill();
+  ctx.fillStyle = "#0f172a";
+  ctx.strokeStyle = "#94a3b8";
+  ctx.lineWidth = 3;
+  [-32, 32].forEach(wx => {
+    ctx.beginPath();
+    ctx.arc(wx, 2, 12, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.stroke();
+  });
+  ctx.restore();
+}
+
+function drawRoad(y, label = "") {
+  ctx.fillStyle = "#1e293b";
+  ctx.fillRect(60, y, 740, 56);
+  ctx.strokeStyle = "#f5c451";
+  ctx.setLineDash([20, 16]);
+  ctx.lineWidth = 3;
+  ctx.beginPath();
+  ctx.moveTo(70, y + 28);
+  ctx.lineTo(790, y + 28);
+  ctx.stroke();
+  ctx.setLineDash([]);
+  if (label) {
+    ctx.fillStyle = "#94a3b8";
+    ctx.font = "bold 14px Segoe UI";
+    ctx.fillText(label, 65, y - 8);
+  }
+}
+
+function drawTree(x, y) {
+  ctx.fillStyle = "#78350f";
+  ctx.fillRect(x - 8, y - 45, 16, 45);
+  ctx.fillStyle = "#10b981";
+  ctx.beginPath();
+  ctx.arc(x, y - 62, 32, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.fillStyle = "#fff";
+  ctx.font = "bold 13px Segoe UI";
+  ctx.fillText("Reference Point", x - 48, y + 18);
+}
+
+function renderCanvas(t) {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  ctx.strokeStyle = "rgba(73, 229, 255, 0.05)";
+  ctx.lineWidth = 1;
+  for (let gx = 0; gx < 1280; gx += 40) {
+    ctx.beginPath(); ctx.moveTo(gx, 0); ctx.lineTo(gx, 720); ctx.stroke();
+  }
+  for (let gy = 0; gy < 720; gy += 40) {
+    ctx.beginPath(); ctx.moveTo(0, gy); ctx.lineTo(1280, gy); ctx.stroke();
+  }
+
+  const s = currentSceneIdx + 1;
+
+  if (s === 1) {
+    drawRoad(310, "Highway Motion");
+    const carX = 140 + ((t * 140) % 600);
+    drawCar(carX, 325, "#49e5ff");
+    drawArrow(carX + 65, 310, carX + 135, 310, "#49e5ff", "Velocity");
+
+    drawRoad(450, "Railway Track");
+    const trainX = 160 + ((t * 190) % 560);
+    ctx.fillStyle = "#f5c451";
+    ctx.fillRect(trainX - 80, 442, 160, 28);
+    ctx.fillStyle = "#0f172a";
+    ctx.fillText("EXPRESS TRAIN", trainX - 52, 461);
+
+    ctx.fillStyle = "#92400e";
+    ctx.fillRect(120, 585, 220, 14);
+    ctx.fillRect(140, 599, 14, 50);
+    ctx.fillRect(306, 599, 14, 50);
+    ctx.fillStyle = "#34d399";
+    ctx.fillRect(175, 567, 90, 18);
+    ctx.fillStyle = "#fff";
+    ctx.font = "bold 14px Segoe UI";
+    ctx.fillText("Book at REST", 180, 558);
+  }
+  else if (s === 2) {
+    ctx.fillStyle = "#78350f";
+    ctx.fillRect(140, 460, 520, 24);
+    ctx.fillRect(170, 484, 22, 120);
+    ctx.fillRect(608, 484, 22, 120);
+
+    ctx.fillStyle = "#49e5ff";
+    ctx.beginPath(); ctx.arc(165, 452, 8, 0, Math.PI * 2); ctx.fill();
+    ctx.fillText("Reference Point (Table Edge)", 120, 435);
+
+    ctx.fillStyle = "#34d399";
+    ctx.fillRect(360, 430, 140, 30);
+    ctx.fillStyle = "#050a14";
+    ctx.font = "bold 16px Segoe UI";
+    ctx.fillText("PHYSICS BOOK", 374, 450);
+
+    ctx.strokeStyle = "#f5c451";
+    ctx.setLineDash([6, 6]);
+    ctx.beginPath(); ctx.moveTo(165, 450); ctx.lineTo(360, 450); ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.fillStyle = "#f5c451";
+    ctx.fillText("Distance = Constant (STATE: REST)", 200, 410);
+
+    const cx = 430, cy = 230, r = 68;
+    ctx.strokeStyle = "#49e5ff"; ctx.lineWidth = 4;
+    ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI * 2); ctx.stroke();
+    const secAngle = (t * Math.PI) / 3 - Math.PI / 2;
+    ctx.beginPath(); ctx.moveTo(cx, cy);
+    ctx.lineTo(cx + 52 * Math.cos(secAngle), cy + 52 * Math.sin(secAngle));
+    ctx.stroke();
+    ctx.fillStyle = "#fff";
+    ctx.fillText(`Time Elapsed: ${Math.floor(t)} s`, cx - 60, cy + 95);
+  }
+  else if (s === 3) {
+    drawRoad(460, "Straight Road");
+    drawTree(160, 460);
+    const carX = 180 + ((t * 45) % 560);
+    drawCar(carX, 474, "#49e5ff");
+    drawArrow(carX + 60, 455, carX + 140, 455, "#49e5ff", "In Motion");
+
+    ctx.strokeStyle = "#f5c451";
+    ctx.setLineDash([8, 6]);
+    ctx.beginPath(); ctx.moveTo(160, 360); ctx.lineTo(carX, 360); ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.fillStyle = "#f5c451";
+    ctx.font = "bold 16px Segoe UI";
+    const dist = Math.round((carX - 160) / 8);
+    ctx.fillText(`Position from Tree: ${dist} m (Changing with Time)`, 220, 345);
+  }
+  else if (s === 4) {
+    const baseY = 470, startX = 150, scale = 95;
+    ctx.strokeStyle = "#64748b"; ctx.lineWidth = 3;
+    ctx.beginPath(); ctx.moveTo(110, baseY); ctx.lineTo(740, baseY); ctx.stroke();
+    for (let m = 0; m <= 6; m++) {
+      const mx = startX + m * scale;
+      ctx.beginPath(); ctx.moveTo(mx, baseY - 10); ctx.lineTo(mx, baseY + 10); ctx.stroke();
+      ctx.fillStyle = "#cbd5e1"; ctx.font = "bold 15px Segoe UI";
+      ctx.fillText(`${m} m`, mx - 14, baseY + 32);
+    }
+
+    const phase = (t % 12) / 12;
+    let personM = phase < 0.5 ? (phase / 0.5) * 5 : 5 - ((phase - 0.5) / 0.5) * 3;
+    const px = startX + personM * scale;
+
+    ctx.strokeStyle = "#f5c451"; ctx.lineWidth = 5;
+    ctx.beginPath();
+    ctx.moveTo(startX, baseY - 35);
+    if (phase < 0.5) {
+      ctx.lineTo(px, baseY - 35);
+    } else {
+      ctx.lineTo(startX + 5 * scale, baseY - 35);
+      ctx.arc(startX + 5 * scale, baseY - 52, 17, Math.PI / 2, -Math.PI / 2, true);
+      ctx.lineTo(px, baseY - 69);
+    }
+    ctx.stroke();
+
+    if (personM > 0.1) {
+      drawArrow(startX, baseY + 58, px, baseY + 58, "#49e5ff", `Displacement = ${personM.toFixed(1)} m Forward`);
+    }
+
+    ctx.fillStyle = "#34d399";
+    ctx.beginPath(); ctx.arc(px, baseY - 18, 12, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = "#f5c451";
+    const walked = phase < 0.5 ? personM : 5 + (5 - personM);
+    ctx.fillText(`Total Path (Distance) = ${walked.toFixed(1)} m`, 160, 295);
+  }
+  else if (s === 5) {
+    drawRoad(320, "Car A: 100 m in 10 s → Speed = 10 m/s (East)");
+    drawRoad(480, "Car B: 100 m in 10 s → Speed = 10 m/s (West)");
+
+    const offset = (t * 110) % 580;
+    const carAX = 130 + offset;
+    const carBX = 710 - offset;
+
+    drawCar(carAX, 334, "#49e5ff");
+    drawArrow(carAX + 60, 315, carAX + 140, 315, "#49e5ff", "v = +10 m/s (East)");
+
+    drawCar(carBX, 494, "#f5c451");
+    drawArrow(carBX - 60, 475, carBX - 140, 475, "#f5c451", "v = −10 m/s (West)");
+  }
+  else if (s === 6) {
+    const cycle = t % 8;
+    drawRoad(240, "1. Positive Acceleration (10 m/s → 20 m/s)");
+    const x1 = 130 + 25 * cycle + 6 * cycle * cycle;
+    drawCar(Math.min(x1, 720), 254, "#34d399", 0.85);
+    drawArrow(Math.min(x1, 720) + 50, 238, Math.min(x1, 720) + 90 + cycle * 10, 238, "#34d399", "a > 0");
+
+    drawRoad(380, "2. Negative Acceleration (20 m/s → 10 m/s)");
+    const x2 = 130 + Math.max(0, 95 * cycle - 5.5 * cycle * cycle);
+    drawCar(Math.min(x2, 720), 394, "#ff5c77", 0.85);
+    drawArrow(Math.min(x2, 720) - 50, 378, Math.min(x2, 720) - 110, 378, "#ff5c77", "a < 0");
+
+    drawRoad(520, "3. Zero Acceleration (Constant Velocity = 15 m/s)");
+    const x3 = 130 + 68 * cycle;
+    drawCar(Math.min(x3, 720), 534, "#49e5ff", 0.85);
+    drawArrow(Math.min(x3, 720) + 50, 518, Math.min(x3, 720) + 115, 518, "#49e5ff", "a = 0");
+  }
+  else if (s === 7) {
+    const sec = t % 4;
+    drawRoad(290, "Uniform Motion: 10 m | 10 m | 10 m per second");
+    [130, 310, 490, 670].forEach((mx, i) => {
+      ctx.fillStyle = "#34d399"; ctx.fillRect(mx, 280, 4, 70);
+      ctx.fillText(`${i * 10}m`, mx - 10, 370);
+    });
+    drawCar(130 + sec * 180, 304, "#34d399", 0.85);
+
+    drawRoad(480, "Non-Uniform Motion: 5 m | 10 m | 15 m per second");
+    [130, 220, 400, 670].forEach((mx, i) => {
+      const labels = ["0m", "5m", "15m", "30m"];
+      ctx.fillStyle = "#ff5c77"; ctx.fillRect(mx, 470, 4, 70);
+      ctx.fillText(labels[i], mx - 10, 560);
+    });
+    const nonUniX = 130 + 33.75 * sec * sec;
+    drawCar(Math.min(nonUniX, 700), 494, "#ff5c77", 0.85);
+  }
+  else if (s === 8) {
+    const cycle = t % 6;
+    const gx = 380, gy = 430;
+    ctx.strokeStyle = "#49e5ff"; ctx.lineWidth = 4;
+    ctx.strokeRect(gx - 45, gy, 90, 120);
+
+    let cardX = gx;
+    let coinY = gy - 14;
+    if (cycle > 2.5) {
+      const dt = cycle - 2.5;
+      cardX = gx + dt * 320;
+      coinY = Math.min(gy + 105, gy - 14 + 0.5 * 450 * dt * dt);
+    }
+    if (cardX < 820) {
+      ctx.fillStyle = "#f5c451";
+      ctx.fillRect(cardX - 75, gy - 6, 150, 6);
+    }
+    ctx.fillStyle = "#e2e8f0";
+    ctx.beginPath(); ctx.arc(gx, coinY, 14, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = "#fff"; ctx.font = "bold 16px Segoe UI";
+    ctx.fillText(cycle <= 2.5 ? "Coin at Rest on Card..." : "Card Flicked! Coin Drops Due to Inertia", 250, 360);
+  }
+  else if (s === 9) {
+    const cycle = t % 6;
+    drawRoad(300, "Empty Trolley (Low Mass = 10 kg) → High Acceleration");
+    const xEmpty = 140 + 45 * cycle * cycle;
+    drawCar(Math.min(xEmpty, 710), 314, "#34d399", 0.8);
+    drawArrow(Math.min(xEmpty, 710) - 90, 305, Math.min(xEmpty, 710) - 45, 305, "#f5c451", "F = 20 N");
+
+    drawRoad(480, "Loaded Trolley (High Mass = 40 kg) → Low Acceleration");
+    const xLoaded = 140 + 11 * cycle * cycle;
+    drawCar(Math.min(xLoaded, 710), 494, "#ff5c77", 0.8);
+    ctx.fillStyle = "#f5c451";
+    ctx.fillRect(Math.min(xLoaded, 710) - 22, 444, 44, 24);
+    drawArrow(Math.min(xLoaded, 710) - 90, 485, Math.min(xLoaded, 710) - 45, 485, "#f5c451", "F = 20 N");
+  }
+  else if (s === 10) {
+    const lift = (t * 45) % 240;
+    const rx = 240, ry = 500 - lift;
+    ctx.fillStyle = "#e2e8f0";
+    ctx.beginPath();
+    ctx.moveTo(rx, ry - 60);
+    ctx.lineTo(rx - 22, ry);
+    ctx.lineTo(rx + 22, ry);
+    ctx.closePath();
+    ctx.fill();
+    drawArrow(rx, ry + 10, rx, ry + 85, "#ff5c77", "Action (Gas Down)");
+    drawArrow(rx, ry - 68, rx, ry - 140, "#49e5ff", "Reaction (Rocket Up)");
+
+    const phase = Math.abs(Math.sin(t * 1.6));
+    const b1x = 520 + phase * 65;
+    const b2x = 690 - phase * 65;
+    ctx.fillStyle = "#49e5ff";
+    ctx.beginPath(); ctx.arc(b1x, 420, 22, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = "#f5c451";
+    ctx.beginPath(); ctx.arc(b2x, 420, 22, 0, Math.PI * 2); ctx.fill();
+    if (phase > 0.82) {
+      drawArrow(b1x, 380, b1x - 70, 380, "#ff5c77", "Reaction");
+      drawArrow(b2x, 380, b2x + 70, 380, "#34d399", "Action");
+    }
+  }
+  else if (s === 11) {
+    const cards = [
+      { title: "1. Rest & Motion", desc: "Position relative to reference point", color: "#49e5ff" },
+      { title: "2. Distance vs Displacement", desc: "Scalar total path vs Vector shortest path", color: "#f5c451" },
+      { title: "3. Speed & Velocity", desc: "Distance/Time vs Displacement/Time (m/s)", color: "#34d399" },
+      { title: "4. Acceleration", desc: "a = (v − u) / t   [m/s²]", color: "#ff5c77" },
+      { title: "5. Uniform / Non-Uniform", desc: "Equal vs Unequal distances in equal time", color: "#49e5ff" },
+      { title: "6. Newton's 3 Laws", desc: "Inertia | F = ma | Action = −Reaction", color: "#f5c451" }
+    ];
+    cards.forEach((c, idx) => {
+      const col = idx % 2;
+      const row = Math.floor(idx / 2);
+      const cx = 80 + col * 365;
+      const cy = 220 + row * 125;
+      ctx.fillStyle = "rgba(15, 23, 42, 0.9)";
+      ctx.strokeStyle = c.color;
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.roundRect(cx, cy, 340, 102, 10);
+      ctx.fill();
+      ctx.stroke();
+
+      ctx.fillStyle = c.color;
+      ctx.font = "bold 17px Segoe UI";
+      ctx.fillText(c.title, cx + 16, cy + 36);
+      ctx.fillStyle = "#e2e8f0";
+      ctx.font = "14px Segoe UI";
+      ctx.fillText(c.desc, cx + 16, cy + 68);
+    });
+  }
+}
+
+function loop(timestamp) {
+  if (!lastTimestamp) lastTimestamp = timestamp;
+  const dt = (timestamp - lastTimestamp) / 1000;
+  lastTimestamp = timestamp;
+
+  if (isPlaying) {
+    sceneElapsed += dt;
+    const dur = SCENES[currentSceneIdx].duration;
+    document.getElementById("sceneProgress").value = Math.min(100, (sceneElapsed / dur) * 100);
+    if (sceneElapsed >= dur && currentSceneIdx < SCENES.length - 1) {
+      loadScene(currentSceneIdx + 1, true);
+    }
+  }
+
+  renderCanvas(sceneElapsed || (timestamp / 1000));
+  requestAnimationFrame(loop);
+}
+
+window.addEventListener("pagehide", () => {
+  if ("speechSynthesis" in window) window.speechSynthesis.cancel();
+});
+
+loadScene(0, false);
+requestAnimationFrame(loop);
+</script>
+</body>
+</html>

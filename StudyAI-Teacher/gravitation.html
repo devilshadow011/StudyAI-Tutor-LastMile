@@ -1,0 +1,850 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>GRAVITATION – Complete Physics Animated Masterclass</title>
+<style>
+  :root {
+    --bg: #070b14;
+    --panel: #0f172a;
+    --border: rgba(73, 229, 255, 0.22);
+    --cyan: #49e5ff;
+    --amber: #f5c451;
+    --crimson: #ff5c77;
+    --green: #34d399;
+    --text: #e2e8f0;
+    --muted: #94a3b8;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', system-ui, sans-serif; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+  header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 24px;
+    background: rgba(15, 23, 42, 0.92);
+    border-bottom: 1px solid var(--border);
+  }
+  header h1 { font-size: 1.1rem; letter-spacing: 0.5px; color: var(--cyan); }
+  header span { font-size: 0.85rem; color: var(--amber); font-weight: 600; }
+  .stage-wrapper {
+    max-width: 1220px;
+    width: 100%;
+    margin: 16px auto;
+    padding: 0 16px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .video-frame {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    background: radial-gradient(circle at top right, #12213d, #060a12 75%);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    overflow: hidden;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.65);
+  }
+  canvas { width: 100%; height: 100%; display: block; }
+  .blackboard {
+    position: absolute;
+    top: 18px;
+    right: 18px;
+    width: 35%;
+    max-height: 64%;
+    background: rgba(10, 18, 34, 0.88);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(73, 229, 255, 0.35);
+    border-radius: 10px;
+    padding: 14px 16px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+    overflow-y: auto;
+  }
+  .blackboard h3 {
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--amber);
+    margin-bottom: 8px;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+    padding-bottom: 4px;
+  }
+  .blackboard-content { font-size: 0.87rem; line-height: 1.45; color: #f1f5f9; }
+  .formula-box {
+    background: rgba(73, 229, 255, 0.1);
+    border-left: 3px solid var(--cyan);
+    padding: 6px 10px;
+    margin: 8px 0;
+    font-family: 'Courier New', monospace;
+    font-weight: bold;
+    font-size: 0.95rem;
+    color: var(--cyan);
+  }
+  .teacher-badge {
+    position: absolute;
+    top: 18px;
+    left: 18px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: rgba(15, 23, 42, 0.85);
+    border: 1px solid var(--border);
+    padding: 8px 14px;
+    border-radius: 999px;
+  }
+  .teacher-avatar {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--amber), #ea580c);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    color: #050a14;
+    font-size: 0.9rem;
+  }
+  .scene-meta small { display: block; font-size: 0.72rem; color: var(--amber); }
+  .scene-meta strong { font-size: 0.9rem; color: #fff; }
+  .subtitle-bar {
+    position: absolute;
+    bottom: 18px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 82%;
+    background: rgba(4, 7, 15, 0.86);
+    border: 1px solid rgba(255,255,255,0.12);
+    padding: 10px 18px;
+    border-radius: 8px;
+    text-align: center;
+    font-size: 0.96rem;
+    line-height: 1.4;
+    color: #ffffff;
+  }
+  .quiz-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(7, 11, 20, 0.92);
+    display: none;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 28px;
+    z-index: 10;
+  }
+  .quiz-overlay.active { display: flex; }
+  .quiz-card {
+    max-width: 640px;
+    width: 100%;
+    background: var(--panel);
+    border: 1px solid var(--cyan);
+    border-radius: 12px;
+    padding: 24px;
+  }
+  .quiz-card h2 { color: var(--amber); font-size: 1.1rem; margin-bottom: 12px; }
+  .quiz-card p.q-text { font-size: 1.15rem; margin-bottom: 16px; }
+  .quiz-options { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .quiz-opt {
+    background: #1e293b;
+    border: 1px solid rgba(255,255,255,0.15);
+    color: #fff;
+    padding: 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    text-align: left;
+    font-size: 0.95rem;
+  }
+  .quiz-opt:hover { border-color: var(--cyan); }
+  .quiz-opt.correct { background: rgba(52, 211, 153, 0.25); border-color: var(--green); }
+  .quiz-opt.wrong { background: rgba(255, 92, 119, 0.25); border-color: var(--crimson); }
+  .quiz-feedback { margin-top: 14px; font-size: 0.92rem; color: var(--cyan); min-height: 22px; }
+  .quiz-nav { margin-top: 14px; display: flex; justify-content: flex-end; }
+  .controls {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 12px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .control-row { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+  button.ctrl-btn {
+    background: #1e293b;
+    color: #fff;
+    border: 1px solid rgba(73, 229, 255, 0.3);
+    padding: 7px 14px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 0.85rem;
+  }
+  button.ctrl-btn.primary { background: var(--cyan); color: #050a14; border: none; }
+  .progress-wrap { flex: 1; display: flex; align-items: center; gap: 10px; }
+  input[type="range"] { flex: 1; accent-color: var(--cyan); cursor: pointer; }
+  .scene-pills { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 4px; }
+  .pill {
+    background: #0b1322;
+    border: 1px solid rgba(255,255,255,0.12);
+    color: var(--muted);
+    padding: 5px 10px;
+    border-radius: 6px;
+    font-size: 0.76rem;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+  .pill.active {
+    border-color: var(--cyan);
+    color: var(--cyan);
+    background: rgba(73, 229, 255, 0.12);
+    font-weight: 600;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>PHYSICS ANIMATED MASTERCLASS: GRAVITATION</h1>
+  <span>Class 9 Physics • Interactive Visual Lesson</span>
+</header>
+
+<div class="stage-wrapper">
+  <div class="video-frame">
+    <canvas id="simCanvas" width="1280" height="720"></canvas>
+
+    <div class="teacher-badge">
+      <div class="teacher-avatar">Dr. G</div>
+      <div class="scene-meta">
+        <small id="sceneTimeLabel">SCENE 1 • 00:00 – 01:00</small>
+        <strong id="sceneTitleLabel">Introduction to Gravitation</strong>
+      </div>
+    </div>
+
+    <div class="blackboard">
+      <h3 id="boardTitle">Digital Blackboard</h3>
+      <div class="blackboard-content" id="boardContent"></div>
+    </div>
+
+    <div class="subtitle-bar" id="subtitleBar">
+      Click <strong>Play Lesson</strong> below to start the animated Gravitation Masterclass with voice-over and live simulations.
+    </div>
+
+    <div class="quiz-overlay" id="quizOverlay">
+      <div class="quiz-card">
+        <h2 id="quizHeader">FINAL QUIZ • QUESTION 1 OF 5</h2>
+        <p class="q-text" id="quizQuestion"></p>
+        <div class="quiz-options" id="quizOptions"></div>
+        <div class="quiz-feedback" id="quizFeedback"></div>
+        <div class="quiz-nav">
+          <button class="ctrl-btn primary" id="nextQuizBtn">Next Question →</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="controls">
+    <div class="control-row">
+      <button class="ctrl-btn primary" id="playPauseBtn" onclick="togglePlay()">▶️ Play Lesson</button>
+      <button class="ctrl-btn" onclick="prevScene()">⏮ Prev</button>
+      <button class="ctrl-btn" onclick="nextScene()">Next ⏭</button>
+      <div class="progress-wrap">
+        <input type="range" id="sceneProgress" min="0" max="100" value="0" oninput="scrubScene(this.value)" />
+      </div>
+      <button class="ctrl-btn" id="voiceBtn" onclick="toggleVoice()">🔊 Voice-Over: ON</button>
+      <button class="ctrl-btn" id="subBtn" onclick="toggleSubtitles()">💬 Subtitles: ON</button>
+    </div>
+    <div class="scene-pills" id="scenePills"></div>
+  </div>
+</div>
+
+<script>
+const SCENES = [
+  {
+    id: 1,
+    time: "00:00 – 01:00",
+    title: "1. Introduction to Gravitation",
+    duration: 18,
+    boardTitle: "Chapter Roadmap",
+    boardHTML: `
+      <p>Welcome to <strong>GRAVITATION</strong>. Today we master:</p>
+      <ul style="margin-left:16px; margin-top:6px; color:#cbd5e1;">
+        <li>Centripetal Force &amp; Orbits</li>
+        <li>Universal Law of Gravitation</li>
+        <li>Free Fall &amp; Acceleration (g)</li>
+        <li>Mass vs. Weight (Earth vs. Moon)</li>
+        <li>Thrust, Pressure &amp; Buoyancy</li>
+        <li>Archimedes' Principle</li>
+      </ul>
+    `,
+    narration: "Welcome to today's Physics lesson on Gravitation. Why does an apple fall down toward the ground while the Moon stays in orbit around Earth without crashing into it? Sir Isaac Newton discovered that the exact same universal force governs both falling objects and orbiting planets."
+  },
+  {
+    id: 2,
+    time: "01:00 – 02:30",
+    title: "2. Centripetal Force & Orbits",
+    duration: 20,
+    boardTitle: "Centripetal Force",
+    boardHTML: `
+      <p><strong>Centripetal Force:</strong> The center-seeking force that keeps an object moving along a circular path.</p>
+      <div class="formula-box">Release String → Tangent Straight Path</div>
+      <p>Earth's gravitational pull supplies the centripetal force keeping the Moon in orbit.</p>
+    `,
+    narration: "When you whirl a stone tied to a string in a circle, the tension in the string pulls the stone inward toward the center. This center-seeking force is called centripetal force. If the string breaks, the stone flies off along a straight tangent. Similarly, Earth's gravity provides the centripetal force that keeps the Moon orbiting."
+  },
+  {
+    id: 3,
+    time: "02:30 – 04:30",
+    title: "3. Universal Law of Gravitation",
+    duration: 22,
+    boardTitle: "Universal Law Formula",
+    boardHTML: `
+      <p>Every object in the universe attracts every other object with a force:</p>
+      <div class="formula-box">F = G × (M × m) / r²</div>
+      <p><strong>G</strong> = 6.67 × 10⁻¹¹ N·m²/kg²<br>
+      Doubling distance (2r) reduces force to <strong>1/4th</strong>!</p>
+    `,
+    narration: "Newton's Universal Law of Gravitation states that every mass attracts every other mass with a force directly proportional to the product of their masses and inversely proportional to the square of the distance between their centers. If you double the distance between two bodies, the gravitational attraction drops to one-fourth."
+  },
+  {
+    id: 4,
+    time: "04:30 – 06:00",
+    title: "4. Importance of Universal Law",
+    duration: 18,
+    boardTitle: "4 Phenomena Explained",
+    boardHTML: `
+      <ul style="margin-left:16px; line-height:1.6;">
+        <li>The force that binds us to Earth</li>
+        <li>Motion of the Moon around Earth</li>
+        <li>Motion of planets around the Sun</li>
+        <li>Ocean tides caused by Moon &amp; Sun</li>
+      </ul>
+    `,
+    narration: "The Universal Law of Gravitation successfully explains four major phenomena: the force binding us firmly to Earth, the orbit of the Moon around Earth, the revolution of all planets around the Sun, and the rise and fall of ocean tides caused by the gravitational pull of the Moon and the Sun."
+  },
+  {
+    id: 5,
+    time: "06:00 – 07:30",
+    title: "5. Free Fall (Vacuum vs. Air)",
+    duration: 20,
+    boardTitle: "Free Fall",
+    boardHTML: `
+      <p><strong>Free Fall:</strong> Motion of an object falling solely under Earth's gravitational force.</p>
+      <div class="formula-box">In Vacuum: Feather &amp; Coin fall together!</div>
+      <p style="color:#f5c451;">Acceleration during free fall does NOT depend on the mass of the falling object.</p>
+    `,
+    narration: "Whenever an object falls toward Earth solely under gravitational force, we say it is in free fall. In air, a feather flutters slowly due to air resistance. However, inside an air-free vacuum tube, a heavy coin and a light feather hit the bottom at the exact same instant because gravitational acceleration is independent of mass."
+  },
+  {
+    id: 6,
+    time: "07:30 – 09:30",
+    title: "6. Acceleration Due to Gravity (g)",
+    duration: 22,
+    boardTitle: "Calculating g",
+    boardHTML: `
+      <div class="formula-box">g = G·M / R² ≈ 9.8 m/s²</div>
+      <p><strong>M</strong> = Earth's mass (6 × 10²⁴ kg)<br>
+      <strong>R</strong> = Earth's radius (6.4 × 10⁶ m)</p>
+      <p style="color:#34d399; margin-top:4px;">g is slightly greater at the Poles than at the Equator because R_pole &lt; R_equator.</p>
+    `,
+    narration: "Equating F equals m g with the universal law gives g equals G M divided by R squared, which equals 9.8 metres per second squared near Earth's surface. Because Earth bulges slightly at the equator, its polar radius is smaller, making the value of g slightly greater at the poles than at the equator."
+  },
+  {
+    id: 7,
+    time: "09:30 – 11:00",
+    title: "7. Motion Under Gravity",
+    duration: 20,
+    boardTitle: "3 Kinematic Equations",
+    boardHTML: `
+      <div class="formula-box">
+        1. v = u + g·t<br>
+        2. h = u·t + ½·g·t²<br>
+        3. v² = u² + 2·g·h
+      </div>
+      <p>Falling down: <strong>g = +9.8 m/s²</strong><br>
+      Thrown upward: <strong>g = −9.8 m/s²</strong></p>
+    `,
+    narration: "To solve problems for vertically moving objects, we replace acceleration a with g in our three equations of motion. When an object drops downward, velocity increases so g is positive 9.8. When a ball is thrown straight upward, gravity opposes its motion so g is taken as negative 9.8 until velocity reaches zero at peak height."
+  },
+  {
+    id: 8,
+    time: "11:00 – 13:00",
+    title: "8. Mass vs. Weight",
+    duration: 22,
+    boardTitle: "Mass vs. Weight",
+    boardHTML: `
+      <p><strong>Mass (m):</strong> Quantity of matter. Scalar, constant everywhere. Unit: <strong>kg</strong>.</p>
+      <p style="margin-top:4px;"><strong>Weight (W = m × g):</strong> Gravitational pull on an object. Vector. Unit: <strong>Newton (N)</strong>.</p>
+      <div class="formula-box">W_moon = (1/6) × W_earth</div>
+    `,
+    narration: "Mass is the amount of matter in an object and stays constant everywhere in the universe, measured in kilograms. Weight is the gravitational force acting on that mass, W equals m times g, measured in Newtons. A 60 kilogram astronaut has a mass of 60 kilograms everywhere, weighing 588 Newtons on Earth but only 98 Newtons on the Moon."
+  },
+  {
+    id: 9,
+    time: "13:00 – 14:30",
+    title: "9. Thrust and Pressure",
+    duration: 20,
+    boardTitle: "Thrust & Pressure",
+    boardHTML: `
+      <p><strong>Thrust:</strong> Net force acting perpendicular to a surface (Unit: <strong>N</strong>).</p>
+      <div class="formula-box">Pressure = Thrust / Area &nbsp;[Pa = N/m²]</div>
+      <p>Smaller Area → Higher Pressure (Sharp knife)<br>
+      Larger Area → Lower Pressure (Camel feet / Wide skis)</p>
+    `,
+    narration: "Force acting perpendicular to a surface is called thrust, while pressure is thrust per unit area, measured in Pascals. A sharp knife cuts easily because its tiny edge area concentrates force into immense pressure. Conversely, wide tires and camel feet spread weight over a larger area to reduce pressure and prevent sinking."
+  },
+  {
+    id: 10,
+    time: "14:30 – 16:00",
+    title: "10. Buoyancy & Fluid Pressure",
+    duration: 20,
+    boardTitle: "Buoyant Force",
+    boardHTML: `
+      <p><strong>Buoyancy:</strong> Upward force exerted by a fluid on an immersed object.</p>
+      <div class="formula-box">
+        Density_obj &lt; Density_fluid → Floats<br>
+        Density_obj &gt; Density_fluid → Sinks
+      </div>
+    `,
+    narration: "Liquids and gases exert pressure in all directions and apply an upward buoyant force, or upthrust, on any submerged object. An iron nail sinks because its density exceeds water's density, whereas a cork floats because its density is less than water's density, allowing upthrust to balance its weight."
+  },
+  {
+    id: 11,
+    time: "16:00 – 18:00",
+    title: "11. Archimedes' Principle",
+    duration: 22,
+    boardTitle: "Archimedes' Principle",
+    boardHTML: `
+      <p>When a body is immersed fully or partially in a fluid, it experiences an upward force equal to the <strong>weight of the fluid displaced</strong> by it.</p>
+      <div class="formula-box">Relative Density = Density_sub / Density_water</div>
+      <p>Relative density has <strong>no unit</strong>.</p>
+    `,
+    narration: "Archimedes' Principle states that when an object is partially or fully immersed in a fluid, it experiences an upward buoyant force equal to the weight of the fluid it displaces. This principle helps design ships and submarines, and defines relative density as the ratio of a substance's density to water's density."
+  },
+  {
+    id: 12,
+    time: "18:00 – 20:00",
+    title: "12. Master Revision & Final Quiz",
+    duration: 30,
+    boardTitle: "Gravitation Formula Sheet",
+    boardHTML: `
+      <div class="formula-box">
+        F = G·M·m / r²<br>
+        g = G·M / R² ≈ 9.8 m/s²<br>
+        W = m × g &nbsp;|&nbsp; W_moon = W_earth / 6<br>
+        P = Thrust / Area (Pa)
+      </div>
+      <p style="color:#f5c451;">Complete the 5-question quiz on screen!</p>
+    `,
+    narration: "Great work! Let us test your mastery of Gravitation with five quick questions on screen. Select the best answer for each question to complete the masterclass."
+  }
+];
+
+const QUIZ_DATA = [
+  {
+    q: "Q1. If the distance between two masses is doubled, the gravitational force between them becomes:",
+    options: ["A. Double", "B. Half", "C. One-fourth", "D. Four times"],
+    answer: 2,
+    explanation: "Correct! Since F is inversely proportional to r², doubling r reduces force to 1 / 2² = 1/4th."
+  },
+  {
+    q: "Q2. What is the SI unit of universal gravitational constant G?",
+    options: ["A. N·m²/kg²", "B. m/s²", "C. Newton", "D. Pascal"],
+    answer: 0,
+    explanation: "Correct! Rearranging F = GMm/r² gives G = Fr²/(Mm), so its SI unit is N·m²/kg²."
+  },
+  {
+    q: "Q3. An object weighs 60 N on Earth. What will be its weight on the Moon?",
+    options: ["A. 60 N", "B. 360 N", "C. 10 N", "D. 0 N"],
+    answer: 2,
+    explanation: "Correct! Weight on the Moon is 1/6th of weight on Earth: 60 N / 6 = 10 N."
+  },
+  {
+    q: "Q4. What is the SI unit of pressure?",
+    options: ["A. Newton", "B. Joule", "C. Pascal (N/m²)", "D. kg/m³"],
+    answer: 2,
+    explanation: "Correct! Pressure is Thrust per unit Area (N/m²), which is named Pascal (Pa)."
+  },
+  {
+    q: "Q5. According to Archimedes' Principle, upward buoyant force equals:",
+    options: ["A. Mass of the object", "B. Weight of fluid displaced", "C. Volume of container", "D. Atmospheric pressure"],
+    answer: 1,
+    explanation: "Correct! Upthrust equals the weight of the fluid displaced by the immersed body."
+  }
+];
+
+const canvas = document.getElementById("simCanvas");
+const ctx = canvas.getContext("2d");
+
+let currentSceneIdx = 0;
+let sceneElapsed = 0;
+let isPlaying = false;
+let voiceEnabled = true;
+let subtitlesEnabled = true;
+let lastTimestamp = null;
+let currentQuizIdx = 0;
+
+const pillsContainer = document.getElementById("scenePills");
+SCENES.forEach((s, idx) => {
+  const btn = document.createElement("button");
+  btn.className = "pill" + (idx === 0 ? " active" : "");
+  btn.textContent = s.title;
+  btn.onclick = () => loadScene(idx, true);
+  pillsContainer.appendChild(btn);
+});
+
+function speak(text) {
+  if (!("speechSynthesis" in window)) return;
+  window.speechSynthesis.cancel();
+  if (!voiceEnabled || !isPlaying) return;
+  const utter = new SpeechSynthesisUtterance(text);
+  utter.rate = 0.98;
+  window.speechSynthesis.speak(utter);
+}
+
+function loadScene(idx, autoPlay = isPlaying) {
+  currentSceneIdx = Math.max(0, Math.min(SCENES.length - 1, idx));
+  sceneElapsed = 0;
+  const scene = SCENES[currentSceneIdx];
+
+  document.getElementById("sceneTimeLabel").textContent = `SCENE ${scene.id} • ${scene.time}`;
+  document.getElementById("sceneTitleLabel").textContent = scene.title;
+  document.getElementById("boardTitle").textContent = scene.boardTitle;
+  document.getElementById("boardContent").innerHTML = scene.boardHTML;
+  document.getElementById("subtitleBar").textContent = scene.narration;
+  document.getElementById("sceneProgress").value = 0;
+
+  document.querySelectorAll(".pill").forEach((p, i) => p.classList.toggle("active", i === currentSceneIdx));
+
+  const quizOverlay = document.getElementById("quizOverlay");
+  if (currentSceneIdx === 11) {
+    quizOverlay.classList.add("active");
+    renderQuiz(0);
+  } else {
+    quizOverlay.classList.remove("active");
+  }
+
+  if (autoPlay) {
+    isPlaying = true;
+    document.getElementById("playPauseBtn").textContent = "⏸ Pause";
+    speak(scene.narration);
+  } else if ("speechSynthesis" in window) {
+    window.speechSynthesis.cancel();
+  }
+}
+
+function togglePlay() {
+  isPlaying = !isPlaying;
+  document.getElementById("playPauseBtn").textContent = isPlaying ? "⏸ Pause" : "▶️ Play Lesson";
+  if (isPlaying) speak(SCENES[currentSceneIdx].narration);
+  else if ("speechSynthesis" in window) window.speechSynthesis.cancel();
+}
+
+function nextScene() { if (currentSceneIdx < SCENES.length - 1) loadScene(currentSceneIdx + 1, isPlaying); }
+function prevScene() { if (currentSceneIdx > 0) loadScene(currentSceneIdx - 1, isPlaying); }
+function scrubScene(val) { sceneElapsed = (val / 100) * SCENES[currentSceneIdx].duration; }
+
+function toggleVoice() {
+  voiceEnabled = !voiceEnabled;
+  document.getElementById("voiceBtn").textContent = voiceEnabled ? "🔊 Voice-Over: ON" : "🔇 Voice-Over: OFF";
+  if (!voiceEnabled && "speechSynthesis" in window) window.speechSynthesis.cancel();
+  else if (isPlaying) speak(SCENES[currentSceneIdx].narration);
+}
+
+function toggleSubtitles() {
+  subtitlesEnabled = !subtitlesEnabled;
+  document.getElementById("subBtn").textContent = subtitlesEnabled ? "💬 Subtitles: ON" : "💬 Subtitles: OFF";
+  document.getElementById("subtitleBar").style.display = subtitlesEnabled ? "block" : "none";
+}
+
+function renderQuiz(qIdx) {
+  currentQuizIdx = qIdx;
+  const item = QUIZ_DATA[qIdx];
+  document.getElementById("quizHeader").textContent = `FINAL QUIZ • QUESTION ${qIdx + 1} OF ${QUIZ_DATA.length}`;
+  document.getElementById("quizQuestion").textContent = item.q;
+  document.getElementById("quizFeedback").textContent = "";
+  const optsDiv = document.getElementById("quizOptions");
+  optsDiv.innerHTML = "";
+  item.options.forEach((opt, i) => {
+    const btn = document.createElement("button");
+    btn.className = "quiz-opt";
+    btn.textContent = opt;
+    btn.onclick = () => {
+      document.querySelectorAll(".quiz-opt").forEach((b, bi) => {
+        b.disabled = true;
+        if (bi === item.answer) b.classList.add("correct");
+        else if (bi === i) b.classList.add("wrong");
+      });
+      document.getElementById("quizFeedback").textContent = item.explanation;
+      speak(item.explanation);
+    };
+    optsDiv.appendChild(btn);
+  });
+  const nextBtn = document.getElementById("nextQuizBtn");
+  nextBtn.onclick = nextQuestion;
+  nextBtn.textContent = qIdx < QUIZ_DATA.length - 1 ? "Next Question →" : "Finish Masterclass 🎉";
+}
+
+function nextQuestion() {
+  if (currentQuizIdx < QUIZ_DATA.length - 1) renderQuiz(currentQuizIdx + 1);
+  else {
+    document.getElementById("quizQuestion").textContent = "Congratulations! You have completed Gravitation. Keep exploring the universe around you!";
+    document.getElementById("quizOptions").innerHTML = "";
+    document.getElementById("quizFeedback").textContent = "Gravitation Masterclass Complete • 100% Covered";
+    const nextBtn = document.getElementById("nextQuizBtn");
+    nextBtn.onclick = () => {
+      isPlaying = false;
+      document.getElementById("playPauseBtn").textContent = "▶️ Play Lesson";
+      loadScene(0, false);
+    };
+    nextBtn.textContent = "↻ Restart Lesson";
+    speak("Congratulations! You have completed Gravitation. Keep exploring the universe around you!");
+  }
+}
+
+function drawArrow(x1, y1, x2, y2, color, label = "") {
+  const head = 12;
+  const angle = Math.atan2(y2 - y1, x2 - x1);
+  ctx.save();
+  ctx.strokeStyle = color;
+  ctx.fillStyle = color;
+  ctx.lineWidth = 4;
+  ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke();
+  ctx.beginPath();
+  ctx.moveTo(x2, y2);
+  ctx.lineTo(x2 - head * Math.cos(angle - Math.PI / 6), y2 - head * Math.sin(angle - Math.PI / 6));
+  ctx.lineTo(x2 - head * Math.cos(angle + Math.PI / 6), y2 - head * Math.sin(angle + Math.PI / 6));
+  ctx.closePath();
+  ctx.fill();
+  if (label) {
+    ctx.font = "bold 15px Segoe UI";
+    ctx.fillText(label, (x1 + x2) / 2 - 35, y1 - 12);
+  }
+  ctx.restore();
+}
+
+function renderCanvas(t) {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  ctx.strokeStyle = "rgba(73, 229, 255, 0.05)";
+  ctx.lineWidth = 1;
+  for (let gx = 0; gx < 1280; gx += 40) { ctx.beginPath(); ctx.moveTo(gx, 0); ctx.lineTo(gx, 720); ctx.stroke(); }
+  for (let gy = 0; gy < 720; gy += 40) { ctx.beginPath(); ctx.moveTo(0, gy); ctx.lineTo(1280, gy); ctx.stroke(); }
+
+  const s = currentSceneIdx + 1;
+
+  if (s === 1) {
+    ctx.fillStyle = "#78350f"; ctx.fillRect(180, 340, 24, 210);
+    ctx.fillStyle = "#10b981"; ctx.beginPath(); ctx.arc(192, 310, 75, 0, Math.PI * 2); ctx.fill();
+    const appleY = 360 + ((t * 95) % 180);
+    ctx.fillStyle = "#ff5c77"; ctx.beginPath(); ctx.arc(235, appleY, 12, 0, Math.PI * 2); ctx.fill();
+    drawArrow(235, appleY + 18, 235, appleY + 62, "#ff5c77", "Gravity");
+
+    const ex = 560, ey = 410;
+    ctx.strokeStyle = "rgba(73, 229, 255, 0.3)"; ctx.setLineDash([6, 6]);
+    ctx.beginPath(); ctx.arc(ex, ey, 130, 0, Math.PI * 2); ctx.stroke(); ctx.setLineDash([]);
+    ctx.fillStyle = "#2563eb"; ctx.beginPath(); ctx.arc(ex, ey, 44, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = "#fff"; ctx.font = "bold 14px Segoe UI"; ctx.fillText("EARTH", ex - 22, ey + 5);
+
+    const mx = ex + 130 * Math.cos(t * 1.1);
+    const my = ey + 130 * Math.sin(t * 1.1);
+    ctx.fillStyle = "#cbd5e1"; ctx.beginPath(); ctx.arc(mx, my, 15, 0, Math.PI * 2); ctx.fill();
+    drawArrow(mx, my, ex + (mx - ex) * 0.55, ey + (my - ey) * 0.55, "#49e5ff", "Orbit");
+  }
+  else if (s === 2) {
+    const cx = 420, cy = 410, r = 145;
+    ctx.strokeStyle = "rgba(245, 196, 81, 0.35)"; ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI * 2); ctx.stroke();
+
+    ctx.fillStyle = "#f5c451"; ctx.beginPath(); ctx.arc(cx, cy, 14, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = "#fff"; ctx.font = "bold 14px Segoe UI"; ctx.fillText("Center", cx - 22, cy + 32);
+
+    const angle = t * 1.4;
+    const sx = cx + r * Math.cos(angle);
+    const sy = cy + r * Math.sin(angle);
+
+    ctx.strokeStyle = "#94a3b8"; ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(sx, sy); ctx.stroke();
+
+    ctx.fillStyle = "#49e5ff"; ctx.beginPath(); ctx.arc(sx, sy, 16, 0, Math.PI * 2); ctx.fill();
+
+    drawArrow(sx, sy, cx + (sx - cx) * 0.35, cy + (sy - cy) * 0.35, "#ff5c77", "Centripetal Force");
+    const tx = sx - 85 * Math.sin(angle);
+    const ty = sy + 85 * Math.cos(angle);
+    drawArrow(sx, sy, tx, ty, "#34d399", "Tangent Velocity");
+  }
+  else if (s === 3) {
+    const y = 410;
+    const m1x = 200;
+    const distScale = 240 + 140 * Math.sin(t * 0.8);
+    const m2x = m1x + distScale;
+
+    ctx.strokeStyle = "#f5c451"; ctx.setLineDash([8, 6]);
+    ctx.beginPath(); ctx.moveTo(m1x, y + 65); ctx.lineTo(m2x, y + 65); ctx.stroke(); ctx.setLineDash([]);
+    const rMeters = (distScale / 120).toFixed(1);
+    ctx.fillStyle = "#f5c451"; ctx.font = "bold 16px Segoe UI";
+    ctx.fillText(`Distance r = ${rMeters} units`, (m1x + m2x) / 2 - 70, y + 92);
+
+    ctx.fillStyle = "#2563eb"; ctx.beginPath(); ctx.arc(m1x, y, 42, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = "#fff"; ctx.fillText("Mass M", m1x - 26, y + 5);
+
+    ctx.fillStyle = "#10b981"; ctx.beginPath(); ctx.arc(m2x, y, 28, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = "#fff"; ctx.fillText("m", m2x - 7, y + 5);
+
+    const fLen = Math.min(115, Math.max(35, 320 / (rMeters * rMeters)));
+    drawArrow(m1x + 48, y - 10, m1x + 48 + fLen, y - 10, "#ff5c77", "F");
+    drawArrow(m2x - 34, y - 10, m2x - 34 - fLen, y - 10, "#ff5c77", "F");
+  }
+  else if (s === 4) {
+    const sx = 390, sy = 410;
+    ctx.fillStyle = "#f5c451"; ctx.beginPath(); ctx.arc(sx, sy, 38, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = "#050a14"; ctx.font = "bold 14px Segoe UI"; ctx.fillText("SUN", sx - 15, sy + 5);
+
+    [95, 155, 215].forEach((orb, idx) => {
+      ctx.strokeStyle = "rgba(255,255,255,0.16)"; ctx.beginPath(); ctx.arc(sx, sy, orb, 0, Math.PI * 2); ctx.stroke();
+      const ang = t * (1.5 - idx * 0.35) + idx;
+      const px = sx + orb * Math.cos(ang);
+      const py = sy + orb * Math.sin(ang);
+      ctx.fillStyle = ["#34d399", "#49e5ff", "#ff5c77"][idx];
+      ctx.beginPath(); ctx.arc(px, py, 11 + idx * 2, 0, Math.PI * 2); ctx.fill();
+    });
+    ctx.fillStyle = "#cbd5e1"; ctx.font = "bold 16px Segoe UI";
+    ctx.fillText("Gravitational Force Keeps Every Planet in Stable Orbit", 180, 645);
+  }
+  else if (s === 5) {
+    const cycle = (t % 5) / 5;
+    ctx.strokeStyle = "#64748b"; ctx.lineWidth = 3;
+    ctx.strokeRect(180, 230, 170, 360);
+    ctx.fillStyle = "#fff"; ctx.font = "bold 15px Segoe UI"; ctx.fillText("With Air Resistance", 195, 215);
+    const coinAirY = Math.min(565, 260 + 310 * cycle * cycle);
+    const featherAirY = Math.min(565, 260 + 160 * cycle);
+    ctx.fillStyle = "#f5c451"; ctx.beginPath(); ctx.arc(230, coinAirY, 13, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = "#49e5ff"; ctx.fillRect(285, featherAirY, 34, 8);
+
+    ctx.strokeStyle = "#34d399";
+    ctx.strokeRect(460, 230, 170, 360);
+    ctx.fillStyle = "#34d399"; ctx.fillText("Vacuum (No Air)", 485, 215);
+    const vacY = Math.min(565, 260 + 310 * cycle * cycle);
+    ctx.fillStyle = "#f5c451"; ctx.beginPath(); ctx.arc(510, vacY, 13, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = "#49e5ff"; ctx.fillRect(565, vacY - 4, 34, 8);
+    ctx.fillStyle = "#fff"; ctx.fillText("Both fall together at g = 9.8 m/s²!", 425, 620);
+  }
+  else if (s === 6) {
+    const ex = 410, ey = 415;
+    ctx.save();
+    ctx.translate(ex, ey);
+    ctx.scale(1.18, 0.92);
+    ctx.fillStyle = "#1d4ed8";
+    ctx.beginPath(); ctx.arc(0, 0, 130, 0, Math.PI * 2); ctx.fill();
+    ctx.strokeStyle = "#49e5ff"; ctx.lineWidth = 3; ctx.stroke();
+    ctx.restore();
+
+    drawArrow(ex, ey - 165, ex, ey - 122, "#34d399", "Pole: Smaller R → Larger g");
+    drawArrow(ex + 205, ey, ex + 155, ey, "#f5c451", "Equator: Larger R → Smaller g");
+  }
+  else if (s === 7) {
+    const phase = (t % 6) / 6;
+    const h = 4 * phase * (1 - phase);
+    const ballY = 550 - h * 290;
+    const bx = 380;
+
+    ctx.strokeStyle = "#64748b"; ctx.beginPath(); ctx.moveTo(220, 568); ctx.lineTo(560, 568); ctx.stroke();
+    ctx.fillStyle = "#f5c451"; ctx.beginPath(); ctx.arc(bx, ballY, 18, 0, Math.PI * 2); ctx.fill();
+
+    if (phase < 0.48) {
+      drawArrow(bx + 35, ballY, bx + 35, ballY - 65, "#34d399", "Velocity Up (g = −9.8)");
+    } else if (phase > 0.52) {
+      drawArrow(bx + 35, ballY, bx + 35, ballY + 65, "#ff5c77", "Velocity Down (g = +9.8)");
+    } else {
+      ctx.fillStyle = "#49e5ff"; ctx.font = "bold 16px Segoe UI";
+      ctx.fillText("Peak Height: v = 0 m/s", bx + 30, ballY);
+    }
+  }
+  else if (s === 8) {
+    ctx.fillStyle = "#1e293b"; ctx.beginPath(); ctx.roundRect(130, 260, 270, 310, 12); ctx.fill();
+    ctx.fillStyle = "#49e5ff"; ctx.font = "bold 18px Segoe UI"; ctx.fillText("ON EARTH (g = 9.8 m/s²)", 155, 298);
+    ctx.fillStyle = "#f5c451"; ctx.fillRect(225, 360, 80, 70);
+    ctx.fillStyle = "#050a14"; ctx.fillText("60 kg", 242, 402);
+    drawArrow(265, 438, 265, 520, "#ff5c77", "Weight = 588 N");
+
+    ctx.fillStyle = "#1e293b"; ctx.beginPath(); ctx.roundRect(450, 260, 270, 310, 12); ctx.fill();
+    ctx.fillStyle = "#34d399"; ctx.font = "bold 18px Segoe UI"; ctx.fillText("ON MOON (g = 1.63 m/s²)", 472, 298);
+    ctx.fillStyle = "#f5c451"; ctx.fillRect(545, 360, 80, 70);
+    ctx.fillStyle = "#050a14"; ctx.fillText("60 kg", 562, 402);
+    drawArrow(585, 438, 585, 462, "#ff5c77", "Weight = 98 N (1/6th)");
+  }
+  else if (s === 9) {
+    ctx.fillStyle = "#ff5c77"; ctx.fillRect(230, 370, 40, 120);
+    ctx.fillStyle = "#334155"; ctx.fillRect(140, 490, 220, 60);
+    drawArrow(250, 285, 250, 360, "#f5c451", "Thrust = 100 N");
+    ctx.fillStyle = "#ff5c77"; ctx.font = "bold 16px Segoe UI";
+    ctx.fillText("Small Area → HIGH Pressure", 145, 580);
+
+    ctx.fillStyle = "#34d399"; ctx.fillRect(460, 450, 200, 40);
+    ctx.fillStyle = "#334155"; ctx.fillRect(440, 490, 240, 60);
+    drawArrow(560, 365, 560, 440, "#f5c451", "Thrust = 100 N");
+    ctx.fillStyle = "#34d399";
+    ctx.fillText("Large Area → LOW Pressure", 455, 580);
+  }
+  else if (s === 10 || s === 11) {
+    ctx.strokeStyle = "#49e5ff"; ctx.lineWidth = 4;
+    ctx.strokeRect(230, 260, 360, 310);
+    ctx.fillStyle = "rgba(37, 99, 235, 0.35)";
+    ctx.fillRect(232, 340, 356, 228);
+
+    const bob = Math.sin(t * 2) * 10;
+    ctx.fillStyle = "#f5c451"; ctx.fillRect(285, 322 + bob, 65, 45);
+    ctx.fillStyle = "#050a14"; ctx.font = "bold 13px Segoe UI"; ctx.fillText("Floats", 298, 348 + bob);
+    drawArrow(317, 372 + bob, 317, 315 + bob, "#34d399", "Upthrust");
+
+    ctx.fillStyle = "#94a3b8"; ctx.fillRect(455, 495, 65, 65);
+    ctx.fillStyle = "#050a14"; ctx.fillText("Sinks", 470, 532);
+    drawArrow(487, 450, 487, 505, "#ff5c77", "Weight > Upthrust");
+
+    if (s === 11) {
+      ctx.fillStyle = "#f5c451"; ctx.font = "bold 16px Segoe UI";
+      ctx.fillText("Buoyant Force = Weight of Displaced Water", 240, 610);
+    }
+  }
+  else if (s === 12) {
+    ctx.fillStyle = "#49e5ff"; ctx.font = "bold 24px Segoe UI";
+    ctx.fillText("Chapter Gravitation Complete — Take the Quiz!", 180, 400);
+  }
+}
+
+function loop(timestamp) {
+  if (!lastTimestamp) lastTimestamp = timestamp;
+  const dt = (timestamp - lastTimestamp) / 1000;
+  lastTimestamp = timestamp;
+
+  if (isPlaying) {
+    sceneElapsed += dt;
+    const dur = SCENES[currentSceneIdx].duration;
+    document.getElementById("sceneProgress").value = Math.min(100, (sceneElapsed / dur) * 100);
+    if (sceneElapsed >= dur && currentSceneIdx < SCENES.length - 1) {
+      loadScene(currentSceneIdx + 1, true);
+    }
+  }
+
+  renderCanvas(sceneElapsed || (timestamp / 1000));
+  requestAnimationFrame(loop);
+}
+
+window.addEventListener("pagehide", () => {
+  if ("speechSynthesis" in window) window.speechSynthesis.cancel();
+});
+
+loadScene(0, false);
+requestAnimationFrame(loop);
+</script>
+</body>
+</html>
